@@ -10,4 +10,5 @@
 /server/*/
 !/server/src/
 
-/client/bin/*
+/client/bin/
+/client/*/bin/

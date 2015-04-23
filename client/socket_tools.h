@@ -1,9 +1,7 @@
 #ifndef _SOCKET_TOOLS_H
 #define _SOCKET_TOOLS_H
 
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#include "qli.h"
 
 #define BACKLOG 5
 #define MAXLINE 4096
@@ -24,14 +22,6 @@ void
 Inet_pton(int af, const char *src, void *dst){
     if(0 > inet_pton(af, src, dst)){
         perror("inet_pton error\n");
-        exit(1);
-    }
-}
-
-void
-Fputs(const char *s, FILE *stream){
-    if(EOF == fputs(s, stream)){
-        perror("fputs error\n");
         exit(1);
     }
 }
@@ -68,23 +58,6 @@ Accept(int fd, SA * sa, socklen_t *salenptr){
         exit(0);
     }
     return acc_fd;
-}
-
-long
-Read(int fd, char *buf, size_t nbytes){
-    long n;
-    if(-1 == (n = read(fd, buf, nbytes))){
-        perror("read error\n");
-        exit(0);
-    }
-    return n;
-}
-
-void
-Write(int fd, char *buf, size_t nbytes){
-    if(nbytes != write(fd, buf, nbytes)){
-        perror("write error\n");
-    }
 }
 
 #endif

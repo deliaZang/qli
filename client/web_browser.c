@@ -1,10 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include "socket_tools.h"
+#include "qli.h"
 
 char http_head[] = "GET / HTTP/1.0\nHost:127.0.0.1:8080\n\n";
 
