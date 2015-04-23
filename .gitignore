@@ -1,0 +1,11 @@
+# 忽略所有隐藏文件
+\.*
+!.gitignore
+# 忽略所有以 `#` 开头的文件
+\#*
+
+# server 目录里只追踪 `src/` 和 `pom.xml`
+/server/*.*
+!/server/pom.xml
+/server/*/
+!/server/src/
