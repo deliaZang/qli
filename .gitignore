@@ -9,3 +9,5 @@
 !/server/pom.xml
 /server/*/
 !/server/src/
+
+/client/bin/*
