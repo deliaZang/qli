@@ -13,6 +13,7 @@
 <body>
     <h2>Welcome!</h2>
     <a href="/article/edit.html">编辑文章</a>
-    <a href="/article/list.html">查看文章</a>
+    <a href="/article/main.html">主页面</a>
+    <a href="/article/list.html">目录</a>
 </body>
 </html>

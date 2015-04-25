@@ -3,14 +3,13 @@ package edu.zut.cs.qli.article.controller;
 import edu.zut.cs.qli.article.domain.Article;
 import edu.zut.cs.qli.article.service.ArticleManager;
 import edu.zut.cs.qli.base.controller.BaseEntityController;
+import edu.zut.cs.qli.catalog.service.CatalogManager;
+import edu.zut.cs.qli.utils.FileUtil;
 import edu.zut.cs.qli.utils.Uploader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,44 +31,59 @@ public class ArticleController extends
         this.manager = this.articleManager;
     }
 
+    @Autowired
+    CatalogManager catalogManager;
+
     @RequestMapping(method = RequestMethod.GET, value = "/edit")
-    public String edit(Model model) {
+    public String edit(@RequestParam(required = false, defaultValue = "0") Long id, Model model) {
+        if (0 != id) {
+            model.addAttribute("article", articleManager.findById(id));
+        }
         return "article/edit";
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/update")
-    public String update(@RequestParam Long id, Model model) {
-        model.addAttribute("article", articleManager.findById(id));
-        return "article/edit";
+    @RequestMapping(method = RequestMethod.GET, value = "/main")
+    public String main(Model model) {
+        model.addAttribute("articles", articleManager.findAll());
+        return "article/main";
     }
-
     @RequestMapping(method = RequestMethod.GET, value = "/list")
     public String list(Model model) {
         model.addAttribute("articles", articleManager.findAll());
         return "article/list";
     }
+    @RequestMapping(method = RequestMethod.GET, value = "/show")
+    public String show(@RequestParam long id, Model model) {
+        Article article = articleManager.findDetailById(id);
+        model.addAttribute("article", article);
+        return "article/show";
+    }
 
     @RequestMapping(method = RequestMethod.GET, value = "/do")
-    public
     @ResponseBody
-    List<Article> doList() {
+    public List<Article> doList() {
         return articleManager.findAll();
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/do")
-    public void doSave(@RequestParam(required = false, defaultValue = "0") Long id,
-                       @RequestParam String title,
-                       @RequestParam String content) {
-        Article a = (0 == id) ? new Article() : articleManager.findById(id);
-        a.setTitle(title);
-        a.setContent(content);
+    @ResponseBody
+    public String doSave(@RequestParam(required = false, defaultValue = "0") Long id,
+                  @RequestParam String title,
+                  @RequestParam String content) {
+        Article article = (0 == id) ? new Article() : articleManager.findById(id);
+        article.setTitle(title);
+        article.setName(FileUtil.createUniqueName());
 
-        articleManager.save(a);
+        articleManager.doSave(article, content);
+        return "保存成功！";
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/do")
-    public void doDelete(@RequestParam long id) {
+    @ResponseBody
+    public String doDelete(@RequestParam long id) {
+        // FIXME 删除今后需要改为设置删除标志，但这样的话也要将list函数排除删除标志，这个还需要考虑下
         articleManager.delete(id);
+        return "删除成功！";
     }
 
     // FIXME
@@ -92,5 +106,17 @@ public class ArticleController extends
         } else {
             response.getWriter().print("<script>" + callback + "(" + result + ")</script>");
         }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/hot", produces = "application/json")
+    @ResponseBody
+    public List<Article> getHotList(){
+        return this.articleManager.findHot();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/lasted", produces = "application/json")
+    @ResponseBody
+    public List<Article> getLastedList(){
+        return this.articleManager.findHot();
     }
 }
