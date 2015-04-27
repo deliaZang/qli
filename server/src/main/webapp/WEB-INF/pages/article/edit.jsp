@@ -16,7 +16,8 @@
     <title>编辑文章</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <script type="text/javascript" src="<%=path%>/resources/js/jquery-1.11.2.min.js"></script>
-    <link href="<%=path%>/resources/bootstrap-3.3.4-dist/css/bootstrap.min.css">
+    <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap.css"  rel="stylesheet"/>
+    <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap-theme.css"  rel="stylesheet"/>
     <link href="/resources/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
     <script type="text/javascript" src="/resources/js/umeditor/third-party/jquery.min.js"></script>
     <script type="text/javascript" charset="utf-8" src="/resources/js/umeditor/umeditor.config.js"></script>
@@ -24,27 +25,31 @@
     <script type="text/javascript" src="/resources/js/umeditor/lang/zh-cn/zh-cn.js"></script>
 </head>
 <body>
-<div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span2" style="background-color: red">
-        </div>
-        <div class="span6">
-            <h1>文章编辑</h1>
-            <input type="hidden" id="id" value="${article.id}"/>
+<div class="clearfix">
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12">
+                    <!--最热 -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">文章编辑</h3>
+                        </div>
+                        <div class="panel-body">
+                            <input type="hidden" id="id" value="${article.id}"/>
 
-            <h3>题目</h3>
-            <input type="text" id="title" value="${article.title}"/>
+                            <span><h4>标题</h4>
+                            <input type="text" id="title" value="${article.title}"/></span>
 
-            <h3>内容</h3>
-            <script type="text/plain" id="myEditor" style="width:1000px;height:240px;">${article.content}</script>
-
-            <button class="btn" onclick="sendContent()">发表</button>
-        </div>
-        <div class="span4" style="background-color: green" >
+                            <h4>内容</h4>
+                            <script type="text/plain" id="myEditor" style="width:80%;height:60%;">${article.content}</script>
+                            <br>
+                            <button class="btn btn-primary" onclick="sendContent()">发表</button>
+                        </div>
+                    </div>
+            </div>
         </div>
     </div>
 </div>
-
 
 <script type="text/javascript">
     UM.getEditor('myEditor');

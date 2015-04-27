@@ -10,6 +10,7 @@
   <script type="text/javascript" src="<%=path%>/resources/js/jquery-1.11.2.min.js"></script>
   <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap.css"  rel="stylesheet"/>
   <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap-theme.css"  rel="stylesheet"/>
+  <script type="text/javascript" src="<%=path%>/resources/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="<%=path%>/resources/js/SimpleTree1.3/js/SimpleTree.js"></script>
   <link href="<%= path%>/resources/style/tree_themes/SimpleTree.css" rel="stylesheet" type="text/css" >
   <script type="text/javascript">
@@ -18,7 +19,21 @@
     var basePath = localObj.protocol + "//" + localObj.host + "/";
   </script>
   <script type="text/javascript">
+    $(function($){
 
+    });
+    function doDelete(id){
+      $.ajx({
+        type: "DELETE",
+        url: basePath+"/article/do.html",
+        success: function (json) {
+          alert(json);
+        },
+        error: function () {
+          alert("删除失败");
+        }
+      });
+    }
   </script>
 </head>
 <body>
@@ -30,32 +45,62 @@
           <th>
             <input name="selectAll" type="checkbox" value="全选"/>
           </th>
-          <th colspan="2">
-            <a href="<%=path%>/article/edit.jsp"><button type="button" class="btn btn-primary">添加课程</button></a>
+          <th>
+            <a href="<%=path%>/article/edit.html"><button type="button" class="btn btn-primary">添加课程</button></a>
           </th>
           <th>
             创建时间
           </th>
+          <th>
+            操作
+          </th>
         </tr>
-        <c:forEach items="${article}" var="a">
-          <td>
-            <tr><input name="title" type="checkbox"/></tr>
-            <tr><a href="#${a.title}">${a.title}</a></tr>
-            <tr>${a.dateCreated}</tr>
-            <tr>
+        <c:forEach items="${articles}" var="a">
+          <tr>
+            <td><input name="title" type="checkbox" value="全选"/></td>
+            <td><a href="<%=path%>/article/show.html?id=${a.id}">${a.title}</a></td>
+            <td>${a.dateCreated}</td>
+            <td>
               <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                  <a href="javascript:void(0);"> 编辑</a> <span class="caret"></span>
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                  操作
+                  <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="javascript:void(0);">删除</a></li>
-                  <li><a href="#">修改分类</a></li>
+
+                <ul class="dropdown-menu">
+                  <li>
+                    <a target="mainView" href="<%=path%>/article/edit.html?id=${a.id}">编辑</a>
+                  </li>
+                  <li>
+                    <a href="javascript:void(0);" onclick="doDelete(${a.id})">删除</a>
+                  </li>
                 </ul>
               </div>
-            </tr>
-          </td>
+            </td>
+          </tr>
         </c:forEach>
       </table>
+    </div>
+    <div>
+      <nav>
+        <ul class="pagination">
+          <li>
+            <a href="#" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <li><a href="#">1</a></li>
+          <li><a href="#">2</a></li>
+          <li><a href="#">3</a></li>
+          <li><a href="#">4</a></li>
+          <li><a href="#">5</a></li>
+          <li>
+            <a href="#" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 </body>

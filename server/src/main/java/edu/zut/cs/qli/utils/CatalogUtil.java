@@ -2,9 +2,7 @@ package edu.zut.cs.qli.utils;
 
 import edu.zut.cs.qli.article.domain.Article;
 import edu.zut.cs.qli.catalog.domain.Catalog;
-import org.neo4j.cypher.internal.compiler.v2_0.functions.Str;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -37,7 +37,9 @@ public class ArticleController extends
     @RequestMapping(method = RequestMethod.GET, value = "/edit")
     public String edit(@RequestParam(required = false, defaultValue = "0") Long id, Model model) {
         if (0 != id) {
-            model.addAttribute("article", articleManager.findById(id));
+            Article article = articleManager.findById(id);
+            article.setContent(FileUtil.getHtml(article.getName()));
+            model.addAttribute("article", article);
         }
         return "article/edit";
     }
@@ -55,6 +57,10 @@ public class ArticleController extends
     @RequestMapping(method = RequestMethod.GET, value = "/show")
     public String show(@RequestParam long id, Model model) {
         Article article = articleManager.findDetailById(id);
+        int visits = article.getVisits().intValue();
+        article.setVisits(++visits);
+        articleManager.save(article);
+        article.setContent(FileUtil.getHtml(article.getName()));
         model.addAttribute("article", article);
         return "article/show";
     }
@@ -78,7 +84,7 @@ public class ArticleController extends
         return "保存成功！";
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/do")
+    @RequestMapping(method = RequestMethod.DELETE, value = "/delete")
     @ResponseBody
     public String doDelete(@RequestParam long id) {
         // FIXME 删除今后需要改为设置删除标志，但这样的话也要将list函数排除删除标志，这个还需要考虑下

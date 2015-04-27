@@ -2,9 +2,7 @@ package edu.zut.cs.qli.article;
 
 import edu.zut.cs.qli.article.domain.Article;
 import edu.zut.cs.qli.article.service.ArticleManager;
-import edu.zut.cs.qli.catalog.domain.Catalog;
 import edu.zut.cs.qli.catalog.service.CatalogManager;
-import edu.zut.cs.qli.utils.CatalogUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

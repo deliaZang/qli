@@ -22,24 +22,24 @@ public class Article extends BaseEntityDomain {
     private String name;
 
     @Column(name = "visits", nullable = false)
-    private Long visits = 0L;
+    private Integer visits = 0;
 
     @JsonManagedReference
     @OrderBy(value = "id ASC")
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private List<Catalog> catalogs = new ArrayList<>();
 
+    public Integer getVisits() {
+        return visits;
+    }
+
+    public void setVisits(Integer visits) {
+        this.visits = visits;
+    }
 
     @Transient
     private String content;
 
-    public Long getVisits() {
-        return visits;
-    }
-
-    public void setVisits(Long visits) {
-        this.visits = visits;
-    }
 
     public String getTitle() {
         return title;
