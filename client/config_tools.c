@@ -1,5 +1,13 @@
 #include "qli.h"
 
+struct {
+    char key[KEY_SIZE];
+    char *(*func)();
+}Gets[N_GET] = {
+    {"user name", get_user_name},
+    {"user token", get_user_token}
+};
+
 char *
 get_user_name(){
     return config.user_name;

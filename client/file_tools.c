@@ -1,5 +1,4 @@
-#ifndef _FILE_TOOLS_H
-#define _FILE_TOOLS_H
+#include "qli.h"
 
 void
 Fputs(const char *s, FILE *stream){
@@ -47,5 +46,3 @@ read_line(FILE * file, char * str, long count){
     }
     return len;
 }
-
-#endif
