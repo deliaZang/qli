@@ -3,8 +3,7 @@
 void
 Fputs(const char *s, FILE *stream){
     if(EOF == fputs(s, stream)){
-        perror("fputs error\n");
-        exit(1);
+        err_sys("fputs error");
     }
 }
 
@@ -12,8 +11,7 @@ long
 Read(int fd, char *buf, size_t nbytes){
     long n;
     if(-1 == (n = read(fd, buf, nbytes))){
-        perror("read error\n");
-        exit(0);
+        err_sys("read error");
     }
     return n;
 }
@@ -21,7 +19,7 @@ Read(int fd, char *buf, size_t nbytes){
 void
 Write(int fd, char *buf, size_t nbytes){
     if(nbytes != write(fd, buf, nbytes)){
-        perror("write error\n");
+        err_sys("write error");
     }
 }
 
@@ -29,10 +27,16 @@ FILE *
 Fopen(const char *path, const char *mode){
     FILE * file;
     if(NULL == (file = fopen(path, mode))){
-        perror("fopen error");
-        exit(0);
+        err_sys("fopen error");
     }
     return file;
+}
+
+void
+Fclose(FILE *fp){
+    if(fclose(fp) != 0){
+        err_sys("fclose error");
+    }
 }
 
 int

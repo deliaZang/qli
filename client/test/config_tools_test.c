@@ -1,4 +1,4 @@
-#include "../config_tools.h"
+#include "qli.h"
 
 int
 main(void)

@@ -78,6 +78,8 @@ FILE *
 Fopen(const char *path, const char *mode);
 int
 read_line(FILE * file, char * str, long count);
+void
+Fclose(FILE *fp);
 /**
    file_tools end
  */
@@ -120,5 +122,25 @@ void
 err_quit(const char *fmt, ...);
 /**
    error start
+ */
+
+/**
+   algorithm start
+ */
+
+struct DLlist{
+    struct DLlist *prev;
+    struct DLlist *next;
+    void *data;
+};
+
+struct DLlist *
+insert(struct DLlist *dll, void *data);
+struct DLlist *
+delete(struct DLlist *dll);
+void *
+getdata(const struct DLlist *dll);
+/**
+   algorithm start
  */
 #endif

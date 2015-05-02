@@ -12,3 +12,7 @@
 
 /client/bin/
 /client/*/bin/
+
+*.o
+*.a
+*.so
