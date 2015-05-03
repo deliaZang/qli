@@ -7,12 +7,14 @@ BIN_DIR=./bin
 BINS = \
     ${BIN_DIR}/web_browser
 
-all: ${BINS}
+all: begin ${BINS}
 clean:
 	(cd lib && make clean)
-	@rm -rf ${BINS} ${BIN_DIR}
+	@rm -rf ${BINS}
 
-${BIN_DIR}/%: %.c
+begin:
 	@mkdir -p ${BIN_DIR}
 	(cd lib && make)
+
+${BIN_DIR}/%: %.c
 	${CC} ${CFLAGS} -o $@ $^ ${LDFLAGS}

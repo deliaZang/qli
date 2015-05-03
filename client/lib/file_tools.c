@@ -50,3 +50,16 @@ read_line(FILE * file, char * str, long count){
     }
     return len;
 }
+
+long
+char_next_index(FILE *file, char ch){
+    long pos, res = EOF;
+    fgetpos(file, &pos);
+    while(!feof(file) && ch != fgetc(file));
+    if(!feof(file)){
+        res = ftell(file);
+    }
+    fsetpos(file, &pos);
+    return res;
+}
+

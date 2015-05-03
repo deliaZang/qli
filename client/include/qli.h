@@ -80,6 +80,8 @@ int
 read_line(FILE * file, char * str, long count);
 void
 Fclose(FILE *fp);
+long
+char_next_index(FILE *file, char ch);
 /**
    file_tools end
  */
@@ -89,6 +91,7 @@ Fclose(FILE *fp);
  */
 
 #define MAXSTRING 4096
+extern char strbuf[];
 
 const char *
 strjoin(const char *left, const char *right, const char *format);
