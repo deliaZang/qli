@@ -263,6 +263,8 @@ struct link{
     struct html *items;
 };
 
+int
+parse_html(const struct html *parent, struct html **cur, FILE *file);
 
 enum HtmlTag
 jurge_entity(FILE *file){
@@ -293,13 +295,47 @@ next:
     return HTML_TAG_UNKNOWN;
 }
 
+// FIXME
 struct html *
 do_html(struct html **cur, FILE *file){
-    int c;
-    struct DLlist *html = Calloc(1, sizeof(struct DLlist));
+    int i, c;
+    struct html *h = Calloc(1, sizeof(struct html));
     while(EOF != (c = fgetc(file))){
+        // TODO 解析属性
+        if('/' == c){
+            switch((*cur)->type){
+                case HTML_TAG_BR:
+                case HTML_TAG_IMG:
+                    goto tail;
+            }
+        }
         if('>' == c) break;
     }
+    parse_html(h, &(h->child), file);
+tail:
+    c = fgetc(file);
+    if('>' == c){
+        switch((*cur)->type){
+            case HTML_TAG_BR:
+            case HTML_TAG_IMG:
+                return h;
+        }
+    }else{
+        for(i = 0; i < strlen(html_tag[(*cur)->type]); ++i){
+            if(html_tag[(*cur)->type][i] != c){
+                goto error;
+            }
+            c = fgetc(file);
+        }
+        if('>' != c){
+            goto error;
+        }
+        return h;
+    }
+
+error:
+    free(h);
+    return NULL;
 }
 
 void
@@ -319,21 +355,20 @@ parse_html(const struct html *parent, struct html **cur, FILE *file){
         if(isspace(c)) continue;
         if('<' == c){
             c = fgetc(file);
+            // FIXME 当注释中含有 '>' 时会有点问题
             if('!' == c){
+                do_unknown(file);
             }else if('/' == c){
+                return 0;
             }else{
+                int type;
                 ungetc(c, file);
-                switch(jurge_entity(file)){
-                    case HTML_TAG_HTML:
-                        (*cur)->type = HTML_TAG_HTML;
-                        do_html(*cur, file);
-                        break;
-                    case HTML_TAG_HEAD:
-                        break;
-                    case HTML_TAG_TITLE:
-                        break;
-                    default:
-                        do_unknown(file);
+                type = jurge_entity(file);
+                if(HTML_TAG_UNKNOWN == type){
+                    do_unknown(file);
+                }else{
+                    (*cur)->type = type;
+                    do_html(cur, file);
                 }
             }
         }
