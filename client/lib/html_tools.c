@@ -240,10 +240,8 @@ const char *html_tag[HTML_TAGS] = {
 
 struct html{
     int type;
-    struct html *prev;
-    struct html *next;
-    struct html *parent;
-    struct html *child;
+    struct DLlist *parent;
+    struct DLlist *child;
     void (*before)(struct html *);
     void (*after)(struct html *);
     void (*dothis)(struct html *);
@@ -251,20 +249,16 @@ struct html{
 };
 
 struct tab{
-    struct tab *prev;
-    struct tab *next;
-    struct html *root;
+    struct DLlist *root;
     FILE * file;
 };
 
 struct link{
-    struct link *prev;
-    struct link *next;
-    struct html *items;
+    struct html *item;
 };
 
-int
-parse_html(const struct html *parent, struct html **cur, FILE *file);
+struct DLlist *
+parse_html(const struct html *parent, struct DLlist *list, FILE *file);
 
 enum HtmlTag
 jurge_entity(FILE *file){
@@ -297,13 +291,13 @@ next:
 
 // FIXME
 struct html *
-do_html(struct html **cur, FILE *file){
+do_html(struct DLlist *list, FILE *file){
     int i, c;
-    struct html *h = Calloc(1, sizeof(struct html));
+    struct html *h = list->data;
     while(EOF != (c = fgetc(file))){
         // TODO 解析属性
         if('/' == c){
-            switch((*cur)->type){
+            switch(h->type){
                 case HTML_TAG_BR:
                 case HTML_TAG_IMG:
                     goto tail;
@@ -311,18 +305,18 @@ do_html(struct html **cur, FILE *file){
         }
         if('>' == c) break;
     }
-    parse_html(h, &(h->child), file);
+    parse_html(h, h->child, file);
 tail:
     c = fgetc(file);
     if('>' == c){
-        switch((*cur)->type){
+        switch(h->type){
             case HTML_TAG_BR:
             case HTML_TAG_IMG:
                 return h;
         }
     }else{
-        for(i = 0; i < strlen(html_tag[(*cur)->type]); ++i){
-            if(html_tag[(*cur)->type][i] != c){
+        for(i = 0; i < strlen(html_tag[h->type]); ++i){
+            if(html_tag[h->type][i] != c){
                 goto error;
             }
             c = fgetc(file);
@@ -334,7 +328,6 @@ tail:
     }
 
 error:
-    free(h);
     return NULL;
 }
 
@@ -346,11 +339,12 @@ do_unknown(FILE *file){
     }
 }
 
-int
-parse_html(const struct html *parent, struct html **cur, FILE *file){
+struct DLlist *
+parse_html(const struct html *parent, struct DLlist *list, FILE *file){
     int c;
-    *cur = Calloc(1, sizeof(struct html));
-    (*cur)->parent = parent;
+    struct html *cur = Calloc(1, sizeof(struct html));
+    list = insert(list, cur);
+    cur->parent = parent;
     while(EOF != (c = fgetc(file))){
         if(isspace(c)) continue;
         if('<' == c){
@@ -359,7 +353,7 @@ parse_html(const struct html *parent, struct html **cur, FILE *file){
             if('!' == c){
                 do_unknown(file);
             }else if('/' == c){
-                return 0;
+                return list;
             }else{
                 int type;
                 ungetc(c, file);
@@ -367,32 +361,31 @@ parse_html(const struct html *parent, struct html **cur, FILE *file){
                 if(HTML_TAG_UNKNOWN == type){
                     do_unknown(file);
                 }else{
-                    (*cur)->type = type;
-                    do_html(cur, file);
+                    cur->type = type;
+                    do_html(list, file);
                 }
             }
         }
     }
-    return 0;
+    return list;
 }
 
 void
-display_html(const struct html *root){
+display_html(const struct DLlist *root){
 }
 
 void
-distroy_html(struct html *root){
+distroy_html(struct DLlist *root){
 }
 
 
 struct tab*
 init_tab(FILE *file){
-    int c;
-    struct html *root;
+    struct DLlist *root;
     struct tab *cur_tab = NULL;
     if(NULL != file){
         rewind(file);
-        if(0 == parse_html(NULL, &root, file)){
+        if(NULL != (root = parse_html(NULL, NULL, file))){
             cur_tab = Calloc(1, sizeof(struct tab));
             cur_tab->root = root;
         }else{
