@@ -239,8 +239,8 @@ const char *html_tag[HTML_TAGS] = {
 
 
 struct html{
-    int type;
-    struct DLlist *parent;
+    enum HtmlTag type;
+    struct html *parent;
     struct DLlist *child;
     void (*before)(struct html *);
     void (*after)(struct html *);
@@ -257,8 +257,35 @@ struct link{
     struct html *item;
 };
 
+void
+before_default(struct html *cur){
+}
+
+void
+after_default(struct html *cur){
+}
+
+void
+dothis_default(struct html *cur){
+    if(NULL == cur) return;
+    dothis_default(cur->parent);
+    fputc("\t", stdout);
+    return;
+}
+
 struct DLlist *
 parse_html(const struct html *parent, struct DLlist *list, FILE *file);
+
+struct html *
+new_html_tag(enum HtmlTag type, const struct html *parent, void *data){
+    struct html *h = Calloc(1, sizeof(struct html));
+    h->parent = parent;
+    h->type = type;
+    h->before = before_default;
+    h->dothis = dothis_default;
+    h->after = after_default;
+    return h;
+}
 
 enum HtmlTag
 jurge_entity(FILE *file){
@@ -305,7 +332,7 @@ do_html(struct DLlist *list, FILE *file){
         }
         if('>' == c) break;
     }
-    parse_html(h, h->child, file);
+    h->child = parse_html(h, h->child, file);
 tail:
     c = fgetc(file);
     if('>' == c){
@@ -313,6 +340,8 @@ tail:
             case HTML_TAG_BR:
             case HTML_TAG_IMG:
                 return h;
+            default:
+                goto error;
         }
     }else{
         for(i = 0; i < strlen(html_tag[h->type]); ++i){
@@ -342,9 +371,7 @@ do_unknown(FILE *file){
 struct DLlist *
 parse_html(const struct html *parent, struct DLlist *list, FILE *file){
     int c;
-    struct html *cur = Calloc(1, sizeof(struct html));
-    list = insert(list, cur);
-    cur->parent = parent;
+    struct html *cur;
     while(EOF != (c = fgetc(file))){
         if(isspace(c)) continue;
         if('<' == c){
@@ -355,13 +382,14 @@ parse_html(const struct html *parent, struct DLlist *list, FILE *file){
             }else if('/' == c){
                 return list;
             }else{
-                int type;
+                enum HtmlTag type;
                 ungetc(c, file);
                 type = jurge_entity(file);
                 if(HTML_TAG_UNKNOWN == type){
                     do_unknown(file);
                 }else{
-                    cur->type = type;
+                    cur = new_html_tag(type, parent, NULL);
+                    list = insert(list, cur);
                     do_html(list, file);
                 }
             }
@@ -372,6 +400,18 @@ parse_html(const struct html *parent, struct DLlist *list, FILE *file){
 
 void
 display_html(const struct DLlist *root){
+    if(NULL == root) return;
+    struct html *h;
+    struct DLlist *temp = root;
+    do{
+        temp = temp->next;
+        h = temp->data;
+
+        h->dothis(h);
+        printf("%s\n", html_tag[h->type]);
+
+        display_html(h->child);
+    }while(temp != root);
 }
 
 void

@@ -1,4 +1,4 @@
-CFLAGS  += -g -Wall -I../include/
+CFLAGS  += -g3 -Wall -I../include/
 LDFLAGS +=
 
 LIBQLI=libqli.a
