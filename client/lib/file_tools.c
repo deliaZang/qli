@@ -52,14 +52,29 @@ read_line(FILE * file, char * str, long count){
 }
 
 long
-char_next_index(FILE *file, char ch){
-    long pos, res = EOF;
+length_end_with(FILE *file, char ch){
+    long pos, len = 0;
     fgetpos(file, &pos);
-    while(!feof(file) && ch != fgetc(file));
-    if(!feof(file)){
-        res = ftell(file);
+    while(!feof(file) && ch != fgetc(file)){
+        ++len;
+    }
+    if(feof(file)){
+        len = -1;
     }
     fsetpos(file, &pos);
-    return res;
+    return len;
 }
 
+char *
+copy_end_with(FILE *file, int ch){
+    char c, *str;
+    long i, len = length_end_with(file, ch);
+    if(len < 0){
+        return NULL;
+    }
+    str = Calloc(len + 1, sizeof(char));
+    for(i = 0; i < len; ++i){
+        str[i] = fgetc(file);
+    }
+    return str;
+}

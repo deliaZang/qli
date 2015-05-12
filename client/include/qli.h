@@ -81,7 +81,9 @@ read_line(FILE * file, char * str, long count);
 void
 Fclose(FILE *fp);
 long
-char_next_index(FILE *file, char ch);
+length_end_with(FILE *file, char ch);
+char *
+copy_end_with(FILE *file, int ch);
 /**
    file_tools end
  */

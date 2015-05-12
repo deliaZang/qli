@@ -9,6 +9,7 @@ main(int argc, char *argv[]){
     FILE *file = Fopen(argv[1], "r");
     struct tab *tab = init_tab(file);
     display_tab(tab);
+    distroy_tab(tab);
 
     Fclose(file);
     return 0;

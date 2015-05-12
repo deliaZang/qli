@@ -259,31 +259,53 @@ struct link{
 
 void
 before_default(struct html *cur){
+    if(NULL == cur || NULL == cur->parent) return;
+    before_default(cur->parent);
+    fputc('\t', stdout);
 }
 
 void
 after_default(struct html *cur){
+    if(NULL == cur) return;
+    fputc('\n', stdout);
 }
 
 void
 dothis_default(struct html *cur){
     if(NULL == cur) return;
-    dothis_default(cur->parent);
-    fputc("\t", stdout);
-    return;
+    printf("%s", html_tag[cur->type]);
+}
+
+void
+dothis_print_data(struct html *cur){
+    if(NULL == cur || NULL == cur->data) return;
+    printf("%s", (char *)cur->data);
 }
 
 struct DLlist *
 parse_html(const struct html *parent, struct DLlist *list, FILE *file);
 
 struct html *
-new_html_tag(enum HtmlTag type, const struct html *parent, void *data){
+new_tag_simple(enum HtmlTag type, const struct html *parent, void *data){
     struct html *h = Calloc(1, sizeof(struct html));
-    h->parent = parent;
     h->type = type;
+    h->parent = parent;
     h->before = before_default;
     h->dothis = dothis_default;
     h->after = after_default;
+    return h;
+}
+
+struct html *
+new_tag_complex(enum HtmlTag type, const struct html *parent, const struct DLlist *child, void *data, void *before, void *after, void *dothis){
+    struct html *h = Calloc(1, sizeof(struct html));
+    h->type = type;
+    h->parent = parent;
+    h->child = child;
+    h->data = data;
+    h->before = before;
+    h->after = after;
+    h->dothis = dothis;
     return h;
 }
 
@@ -316,52 +338,83 @@ next:
     return HTML_TAG_UNKNOWN;
 }
 
-// FIXME
-struct html *
-do_html(struct DLlist *list, FILE *file){
-    int i, c;
-    struct html *h = list->data;
+#define PARSE_SUCCESS 0
+#define PARSE_FAIL 1
+#define PARSE_COMPLETE 2
+
+int
+parse_attribute(struct html *tag, FILE *file){
+    int c;
+    char *str;
     while(EOF != (c = fgetc(file))){
-        // TODO 解析属性
+        if(isspace(c)) continue;
         if('/' == c){
-            switch(h->type){
-                case HTML_TAG_BR:
-                case HTML_TAG_IMG:
-                    goto tail;
+            if('>' == fgetc(file)){
+                return PARSE_COMPLETE;
             }
+            return PARSE_FAIL;
         }
-        if('>' == c) break;
+        if('>' == c) return PARSE_SUCCESS;
+        // FIXME
+        if(HTML_TAG_IMG == tag->type || HTML_TAG_A == tag->type){
+            char * attribute = (HTML_TAG_IMG == tag->type) ? "src" : "href";
+            ungetc(c, file);
+            str = copy_end_with(file, '=');
+            if(0 != strcmp(str, attribute)){
+                free(str);
+                str = copy_end_with(file, ' ');
+                free(str);
+                continue;
+            }
+            fgetc(file), c = fgetc(file);
+            if('\'' != c && '\"' != c){
+                ungetc(c, file);
+                c = ' ';
+            }
+            free(str);
+            str = copy_end_with(file, c);
+            fgetc(file);
+            tag->data = str;
+        }
     }
-    h->child = parse_html(h, h->child, file);
-tail:
+    return PARSE_FAIL;
+}
+
+int
+parse_tail(const struct html *tag, FILE *file){
+    int i, c;
     c = fgetc(file);
     if('>' == c){
-        switch(h->type){
-            case HTML_TAG_BR:
-            case HTML_TAG_IMG:
-                return h;
-            default:
-                goto error;
-        }
+        // FIXME 我决定先放宽限制，因为我不清楚有哪些标签是可以用 '/>'结尾的
+        return PARSE_COMPLETE;
     }else{
-        for(i = 0; i < strlen(html_tag[h->type]); ++i){
-            if(html_tag[h->type][i] != c){
-                goto error;
+        for(i = 0; i < strlen(html_tag[tag->type]); ++i){
+            if(html_tag[tag->type][i] != c){
+                return PARSE_FAIL;
             }
             c = fgetc(file);
         }
         if('>' != c){
-            goto error;
+            return PARSE_FAIL;
         }
-        return h;
+        return PARSE_COMPLETE;
     }
+}
 
-error:
-    return NULL;
+// FIXME
+int
+do_tag(struct DLlist *list, FILE *file){
+    int res;
+    struct html *tag = getdata(list);
+    if(PARSE_SUCCESS != (res = parse_attribute(tag, file))){
+        return res;
+    }
+    tag->child = parse_html(tag, tag->child, file);
+    return parse_tail(tag, file);
 }
 
 void
-do_unknown(FILE *file){
+do_ignore(FILE *file){
     int c;
     while(EOF != (c = fgetc(file))){
         if('>' == c) break;
@@ -371,14 +424,15 @@ do_unknown(FILE *file){
 struct DLlist *
 parse_html(const struct html *parent, struct DLlist *list, FILE *file){
     int c;
-    struct html *cur;
+    struct html *tag;
     while(EOF != (c = fgetc(file))){
         if(isspace(c)) continue;
         if('<' == c){
             c = fgetc(file);
             // FIXME 当注释中含有 '>' 时会有点问题
             if('!' == c){
-                do_unknown(file);
+                do_ignore(file);
+                continue;
             }else if('/' == c){
                 return list;
             }else{
@@ -386,13 +440,22 @@ parse_html(const struct html *parent, struct DLlist *list, FILE *file){
                 ungetc(c, file);
                 type = jurge_entity(file);
                 if(HTML_TAG_UNKNOWN == type){
-                    do_unknown(file);
+                    do_ignore(file);
+                    continue;
+                }else if(HTML_TAG_IMG == type || HTML_TAG_A == type){
+                    tag = new_tag_complex(type, parent, NULL, NULL,
+                        before_default, after_default, dothis_print_data);
                 }else{
-                    cur = new_html_tag(type, parent, NULL);
-                    list = insert(list, cur);
-                    do_html(list, file);
+                    tag = new_tag_simple(type, parent, NULL);
                 }
+                list = insert(list, tag);
+                do_tag(list, file);
             }
+        }else{
+            ungetc(c, file);
+            tag = new_tag_complex(HTML_TAG_NONE, parent, NULL, copy_end_with(file, '<'),
+                before_default, after_default, dothis_print_data);
+            list = insert(list, tag);
         }
     }
     return list;
@@ -405,10 +468,11 @@ display_html(const struct DLlist *root){
     struct DLlist *temp = root;
     do{
         temp = temp->next;
-        h = temp->data;
+        h = getdata(temp);
 
+        h->before(h);
         h->dothis(h);
-        printf("%s\n", html_tag[h->type]);
+        h->after(h);
 
         display_html(h->child);
     }while(temp != root);
@@ -416,6 +480,15 @@ display_html(const struct DLlist *root){
 
 void
 distroy_html(struct DLlist *root){
+    if(NULL == root) return;
+    struct html *h;
+    do{
+        h = getdata(root);
+        distroy_html(h->child);
+        free(h->data);
+        free(h);
+        root = delete(root);
+    }while(NULL != root);
 }
 
 
@@ -438,4 +511,10 @@ init_tab(FILE *file){
 void
 display_tab(const struct tab *tab){
     display_html(tab->root);
+}
+
+void
+distroy_tab(struct tab *tab){
+    distroy_html(tab->root);
+    free(tab);
 }
