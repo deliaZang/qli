@@ -123,10 +123,10 @@ const char *html_tag[HTML_TAGS] = {
 #define PARSE_FAIL 1
 #define PARSE_COMPLETE 2
 
-struct DLlist *
+static struct DLlist *
 parse_html(const struct html *parent, struct DLlist *list, FILE *file);
 
-struct html *
+static struct html *
 new_tag(enum HtmlTag type, struct html *parent, void *data){
     struct html *h = Calloc(1, sizeof(struct html));
     h->type = type;
@@ -135,7 +135,7 @@ new_tag(enum HtmlTag type, struct html *parent, void *data){
     return h;
 }
 
-enum HtmlTag
+static enum HtmlTag
 jurge_entity(FILE *file){
     int i, c;
     static char buf[MAX_TAG_SIZE+1];
@@ -164,7 +164,7 @@ next:
     return HTML_TAG_UNKNOWN;
 }
 
-int
+static int
 parse_attribute(struct html *tag, FILE *file){
     int c;
     char *str;
@@ -202,7 +202,7 @@ parse_attribute(struct html *tag, FILE *file){
     return PARSE_FAIL;
 }
 
-int
+static int
 parse_tail(const struct html *tag, FILE *file){
     int i, c;
     c = fgetc(file);
@@ -224,7 +224,7 @@ parse_tail(const struct html *tag, FILE *file){
 }
 
 // FIXME
-int
+static int
 do_tag(struct DLlist *list, FILE *file){
     int res;
     struct html *tag = getdata(list);
@@ -235,7 +235,7 @@ do_tag(struct DLlist *list, FILE *file){
     return parse_tail(tag, file);
 }
 
-void
+static void
 do_ignore(FILE *file){
     int c;
     while(EOF != (c = fgetc(file))){
@@ -243,7 +243,7 @@ do_ignore(FILE *file){
     }
 }
 
-struct DLlist *
+static struct DLlist *
 parse_html(const struct html *parent, struct DLlist *list, FILE *file){
     int c;
     struct html *tag;
@@ -281,7 +281,7 @@ parse_html(const struct html *parent, struct DLlist *list, FILE *file){
     return list;
 }
 
-void
+static void
 distroy_html(struct DLlist *root){
     if(NULL == root) return;
     struct html *h;
@@ -293,7 +293,6 @@ distroy_html(struct DLlist *root){
         root = delete(root);
     }while(NULL != root);
 }
-
 
 struct tab*
 init_tab(FILE *file){
@@ -309,11 +308,6 @@ init_tab(FILE *file){
         }
     }
     return cur_tab;
-}
-
-void
-display_tab(const struct tab *tab){
-    display_html(tab->root);
 }
 
 void

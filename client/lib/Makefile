@@ -1,5 +1,5 @@
 CFLAGS  += -g3 -Wall -I../include/
-LDFLAGS += -lcurses
+LDFLAGS += -lncursesw
 
 LIBQLI=libqli.a
 SRC=${wildcard *.c}

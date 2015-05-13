@@ -1,5 +1,5 @@
 CFLAGS  += -g3 -Wall -I../include
-LDFLAGS += -L../lib -lqli
+LDFLAGS += -L../lib -lqli -lncursesw
 
 SRC_DIR=.
 BIN_DIR=./bin

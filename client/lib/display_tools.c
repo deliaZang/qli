@@ -1,29 +1,33 @@
 #include <ncurses.h>
 #include "qli.h"
 
-void
+static void
 before_default(struct html *cur){
     if(NULL == cur || NULL == cur->parent) return;
     before_default(cur->parent);
-    fputc('\t', stdout);
+    addch('\t');
 }
 
-void
+static void
 after_default(struct html *cur){
     if(NULL == cur) return;
-    fputc('\n', stdout);
+    addch('\n');
 }
 
-void
+static void
 dothis_default(struct html *cur){
     if(NULL == cur) return;
-    printf("%s", html_tag[cur->type]);
+    attron(A_STANDOUT);
+    addstr(html_tag[cur->type]);
+    attroff(A_STANDOUT);
 }
 
-void
+static void
 dothis_print_data(struct html *cur){
     if(NULL == cur || NULL == cur->data) return;
-    printf("%s", (char *)cur->data);
+    attron(A_UNDERLINE);
+    addstr((char *)cur->data);
+    attroff(A_UNDERLINE);
 }
 
 #define DEFAULT_FUNCS {(tag_func)before_default, (tag_func)dothis_default, (tag_func)after_default}
@@ -145,7 +149,7 @@ const struct tag_funcs tag_funcs[HTML_TAGS] = {
 	[HTML_TAG_VAR] = DEFAULT_FUNCS,
 };
 
-void
+static void
 display_html(const struct DLlist *root){
     if(NULL == root) return;
     struct html *h;
@@ -160,4 +164,12 @@ display_html(const struct DLlist *root){
 
         display_html(h->child);
     }while(temp != root);
+}
+
+void
+display_tab(const struct tab *tab){
+    initscr();
+    display_html(tab->root);
+    getch();
+    endwin();
 }

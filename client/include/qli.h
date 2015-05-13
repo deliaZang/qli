@@ -157,8 +157,6 @@ struct tag_funcs{
     tag_func after;
 };
 
-void
-display_html(const struct DLlist *root);
 extern const struct tag_funcs tag_funcs[HTML_TAGS];
 /**
    display start
@@ -188,6 +186,13 @@ struct link{
 #define dothis(tag) (tag_funcs[(tag)->type].dothis(tag))
 
 extern const char *html_tag[HTML_TAGS];
+
+struct tab*
+init_tab(FILE *file);
+void
+distroy_tab(struct tab *tab);
+void
+display_tab(const struct tab *tab);
 /**
    html end
  */
