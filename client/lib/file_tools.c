@@ -53,7 +53,8 @@ read_line(FILE * file, char * str, long count){
 
 long
 length_end_with(FILE *file, char ch){
-    long pos, len = 0;
+    long len = 0;
+    fpos_t pos;
     fgetpos(file, &pos);
     while(!feof(file) && ch != fgetc(file)){
         ++len;
@@ -67,7 +68,7 @@ length_end_with(FILE *file, char ch){
 
 char *
 copy_end_with(FILE *file, int ch){
-    char c, *str;
+    char *str;
     long i, len = length_end_with(file, ch);
     if(len < 0){
         return NULL;

@@ -1,124 +1,6 @@
 #include "qli.h"
 
 #define MAX_TAG_SIZE 20
-enum HtmlTag{
-	HTML_TAG_NONE,
-	
-	HTML_TAG_UNKNOWN,
-	
-	HTML_TAG_COMMENT,
-	HTML_TAG_DOCTYPE,
-	
-	HTML_TAG_A,
-	HTML_TAG_ABBR,
-	HTML_TAG_ACRONYM,
-	HTML_TAG_ADDRESS,
-	HTML_TAG_APPLET,
-	HTML_TAG_AREA,
-	
-	HTML_TAG_B,
-	HTML_TAG_BASE,
-	HTML_TAG_BASEFONT,
-	HTML_TAG_BDO,
-	HTML_TAG_BIG,
-	HTML_TAG_BLOCKQUOTE,
-	HTML_TAG_BODY,
-	HTML_TAG_BR,
-	HTML_TAG_BUTTON,
-	
-	HTML_TAG_CAPTION,
-	HTML_TAG_CENTER,
-	HTML_TAG_CITE,
-	HTML_TAG_CODE,
-	HTML_TAG_COL,
-	HTML_TAG_COLGROUP,
-	HTML_TAG_DD,
-	HTML_TAG_DEL,
-	
-	HTML_TAG_DFN,
-	HTML_TAG_DIR,
-	HTML_TAG_DIV,
-	HTML_TAG_DL,
-	HTML_TAG_DT,
-	
-	HTML_TAG_EM,
-	HTML_TAG_FIELDSET,
-	HTML_TAG_FONT,
-	HTML_TAG_FORM,
-	HTML_TAG_FRAME,
-	HTML_TAG_FRAMESET,
-	
-	HTML_TAG_H1,
-	HTML_TAG_H2,
-	HTML_TAG_H3,
-	HTML_TAG_H4,
-	HTML_TAG_H5,
-	HTML_TAG_H6,
-	HTML_TAG_HEAD,
-	HTML_TAG_HR,
-	HTML_TAG_HTML,
-	
-	HTML_TAG_I,
-	HTML_TAG_IFRAME,
-	HTML_TAG_IMG,
-	HTML_TAG_INPUT,
-	HTML_TAG_INS,
-	
-	HTML_TAG_KBD,
-	
-	HTML_TAG_LABEL,
-	HTML_TAG_LEGEND,
-	HTML_TAG_LI,
-	HTML_TAG_LINK,
-	
-	HTML_TAG_MAP,
-	HTML_TAG_MENU,
-	HTML_TAG_META,
-	
-	HTML_TAG_NOFRAMES,
-	HTML_TAG_NOSCRIPT,
-	
-	HTML_TAG_OBJECT,
-	HTML_TAG_OL,
-	HTML_TAG_OPTGROUP,
-	HTML_TAG_OPTION,
-	
-	HTML_TAG_P,
-	HTML_TAG_PARAM,
-	HTML_TAG_PRE,
-	
-	HTML_TAG_Q,
-	
-	HTML_TAG_S,
-	HTML_TAG_SAMP,
-	HTML_TAG_SCRIPT,
-	HTML_TAG_SELECT,
-	HTML_TAG_SMALL,
-	HTML_TAG_SPAN,
-	HTML_TAG_STRIKE,
-	HTML_TAG_STRONG,
-	HTML_TAG_STYLE,
-	HTML_TAG_SUB,
-	HTML_TAG_SUP,
-	
-	HTML_TAG_TABLE,
-	HTML_TAG_TBODY,
-	HTML_TAG_TD,
-	HTML_TAG_TEXTAREA,
-	HTML_TAG_TFOOT,
-	HTML_TAG_TH,
-	HTML_TAG_THEAD,
-	HTML_TAG_TITLE,
-	HTML_TAG_TR,
-	HTML_TAG_TT,
-	
-	HTML_TAG_U,
-	HTML_TAG_UL,
-	
-	HTML_TAG_VAR,
-	
-	HTML_TAGS,
-};
 
 const char *html_tag[HTML_TAGS] = {
 	[HTML_TAG_NONE] = "",
@@ -237,75 +119,19 @@ const char *html_tag[HTML_TAGS] = {
 	[HTML_TAG_VAR] = "var",
 };
 
-
-struct html{
-    enum HtmlTag type;
-    struct html *parent;
-    struct DLlist *child;
-    void (*before)(struct html *);
-    void (*after)(struct html *);
-    void (*dothis)(struct html *);
-    void *data;
-};
-
-struct tab{
-    struct DLlist *root;
-    FILE * file;
-};
-
-struct link{
-    struct html *item;
-};
-
-void
-before_default(struct html *cur){
-    if(NULL == cur || NULL == cur->parent) return;
-    before_default(cur->parent);
-    fputc('\t', stdout);
-}
-
-void
-after_default(struct html *cur){
-    if(NULL == cur) return;
-    fputc('\n', stdout);
-}
-
-void
-dothis_default(struct html *cur){
-    if(NULL == cur) return;
-    printf("%s", html_tag[cur->type]);
-}
-
-void
-dothis_print_data(struct html *cur){
-    if(NULL == cur || NULL == cur->data) return;
-    printf("%s", (char *)cur->data);
-}
+#define PARSE_SUCCESS 0
+#define PARSE_FAIL 1
+#define PARSE_COMPLETE 2
 
 struct DLlist *
 parse_html(const struct html *parent, struct DLlist *list, FILE *file);
 
 struct html *
-new_tag_simple(enum HtmlTag type, const struct html *parent, void *data){
+new_tag(enum HtmlTag type, struct html *parent, void *data){
     struct html *h = Calloc(1, sizeof(struct html));
     h->type = type;
     h->parent = parent;
-    h->before = before_default;
-    h->dothis = dothis_default;
-    h->after = after_default;
-    return h;
-}
-
-struct html *
-new_tag_complex(enum HtmlTag type, const struct html *parent, const struct DLlist *child, void *data, void *before, void *after, void *dothis){
-    struct html *h = Calloc(1, sizeof(struct html));
-    h->type = type;
-    h->parent = parent;
-    h->child = child;
     h->data = data;
-    h->before = before;
-    h->after = after;
-    h->dothis = dothis;
     return h;
 }
 
@@ -337,10 +163,6 @@ next:
     }
     return HTML_TAG_UNKNOWN;
 }
-
-#define PARSE_SUCCESS 0
-#define PARSE_FAIL 1
-#define PARSE_COMPLETE 2
 
 int
 parse_attribute(struct html *tag, FILE *file){
@@ -443,39 +265,20 @@ parse_html(const struct html *parent, struct DLlist *list, FILE *file){
                     do_ignore(file);
                     continue;
                 }else if(HTML_TAG_IMG == type || HTML_TAG_A == type){
-                    tag = new_tag_complex(type, parent, NULL, NULL,
-                        before_default, after_default, dothis_print_data);
+                    tag = new_tag(type, parent, NULL);
                 }else{
-                    tag = new_tag_simple(type, parent, NULL);
+                    tag = new_tag(type, parent, NULL);
                 }
                 list = insert(list, tag);
                 do_tag(list, file);
             }
         }else{
             ungetc(c, file);
-            tag = new_tag_complex(HTML_TAG_NONE, parent, NULL, copy_end_with(file, '<'),
-                before_default, after_default, dothis_print_data);
+            tag = new_tag(HTML_TAG_NONE, parent, copy_end_with(file, '<'));
             list = insert(list, tag);
         }
     }
     return list;
-}
-
-void
-display_html(const struct DLlist *root){
-    if(NULL == root) return;
-    struct html *h;
-    struct DLlist *temp = root;
-    do{
-        temp = temp->next;
-        h = getdata(temp);
-
-        h->before(h);
-        h->dothis(h);
-        h->after(h);
-
-        display_html(h->child);
-    }while(temp != root);
 }
 
 void

@@ -1,5 +1,5 @@
 CFLAGS  += -g3 -Wall -I../include/
-LDFLAGS +=
+LDFLAGS += -lcurses
 
 LIBQLI=libqli.a
 SRC=${wildcard *.c}
@@ -13,4 +13,4 @@ clean:
 ${LIBQLI}: ${OBJ}
 	${AR} rv $@ $^
 %.o: %c
-	${CC} ${CFLAGS} -o $@ -c $<
+	${CC} ${CFLAGS} -o $@ -c $< $(LDFLAGS)

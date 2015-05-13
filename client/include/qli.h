@@ -2,15 +2,17 @@
 #define _QLI_H
 
 #include <stdio.h>
+#include <fcntl.h>
+#include <netdb.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <fcntl.h>
-#include <netdb.h>
 #include <unistd.h>
+#include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <arpa/inet.h>
+#include "html_tags.h"
 
 /**
    socket_tools start
@@ -67,7 +69,6 @@ load_config();
 /**
    file_tools start
  */
-
 void
 Fputs(const char *s, FILE *stream);
 long
@@ -91,7 +92,6 @@ copy_end_with(FILE *file, int ch);
 /**
    string_tools start
  */
-
 #define MAXSTRING 4096
 extern char strbuf[];
 
@@ -108,13 +108,12 @@ Malloc(size_t size);
 void *
 Calloc(size_t nmemb, size_t size);
 /**
-   string_tools start
+   string_tools end
  */
 
 /**
    error start
  */
-
 void
 err_ret(const char *fmt, ...);
 void
@@ -126,13 +125,12 @@ err_msg(const char *fmt, ...);
 void
 err_quit(const char *fmt, ...);
 /**
-   error start
+   error end
  */
 
 /**
    algorithm start
  */
-
 struct DLlist{
     struct DLlist *prev;
     struct DLlist *next;
@@ -140,12 +138,58 @@ struct DLlist{
 };
 
 struct DLlist *
-insert(struct DLlist *dll, void *data);
+insert(struct DLlist *cur, void *data);
 struct DLlist *
-delete(struct DLlist *dll);
+delete(struct DLlist *cur);
 void *
-getdata(const struct DLlist *dll);
+getdata(const struct DLlist *cur);
 /**
-   algorithm start
+   algorithm end
  */
+
+/**
+   display start
+ */
+typedef void (*tag_func)(struct html *);
+struct tag_funcs{
+    tag_func before;
+    tag_func dothis;
+    tag_func after;
+};
+
+void
+display_html(const struct DLlist *root);
+extern const struct tag_funcs tag_funcs[HTML_TAGS];
+/**
+   display start
+ */
+
+/**
+   html start
+ */
+struct html{
+    int type;
+    struct html *parent;
+    struct DLlist *child;
+    void *data;
+};
+
+struct tab{
+    struct DLlist *root;
+    FILE * file;
+};
+
+struct link{
+    struct html *item;
+};
+
+#define before(tag) (tag_funcs[(tag)->type].before(tag))
+#define after(tag) (tag_funcs[(tag)->type].after(tag))
+#define dothis(tag) (tag_funcs[(tag)->type].dothis(tag))
+
+extern const char *html_tag[HTML_TAGS];
+/**
+   html end
+ */
+
 #endif
