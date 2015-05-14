@@ -8,7 +8,9 @@ BINS = \
     ${BIN_DIR}/config_tools_test	\
     ${BIN_DIR}/sscanf_test			\
 	${BIN_DIR}/list_test			\
-	${BIN_DIR}/html_test
+	${BIN_DIR}/html_test			\
+	${BIN_DIR}/sunday_test			\
+
 
 all: begin ${BINS}
 clean:

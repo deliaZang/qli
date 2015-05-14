@@ -79,3 +79,77 @@ copy_end_with(FILE *file, int ch){
     }
     return str;
 }
+
+static int
+index_of(const char *src, char c){
+    if(NULL == src){
+        return -1;
+    }
+    int i = 0;
+    while(src[i]){
+        if(c == src[i]){
+            return i;
+        }
+        ++i;
+    }
+    return -1;
+}
+
+int
+file_pos_char(FILE *file, long pos){
+    int ch;
+    fpos_t old;
+    fgetpos(file, &old);
+    fsetpos(file, &pos);
+    ch = fgetc(file);
+    fsetpos(file, &old);
+    return ch;
+}
+
+long
+file_length(FILE *file){
+    long pos, res;
+    fgetpos(file, &pos);
+    fseek(file, 0, SEEK_END);
+    fgetpos(file, &res);
+    fsetpos(file, &pos);
+    return res;
+}
+
+long
+sunday(FILE *file, const char *pat){
+    if(NULL == file || NULL == pat){
+        return -1;
+    }
+    long pos, f_len, p_len;
+    fgetpos(file, &pos);
+    f_len = file_length(file) - pos;
+    p_len = strlen(pat);
+    fsetpos(file, &pos);
+
+    int idx;
+    long f = 0, p = 0;
+
+    while(!feof(file) && p < p_len){
+        while(fgetc(file) == pat[p]){
+            ++f, ++p;
+            if(p >= p_len){
+                fsetpos(file, &pos);
+                return f-p;
+            }else if(f >= f_len){
+                fsetpos(file, pos);
+                return -1;
+            }
+        }
+
+        if((idx = index_of(pat, file_pos_char(file, f-p+p_len))) < 0){
+            f = f-p+p_len+1;
+        }else{
+            f = f-p+p_len-idx;
+        }
+        fsetpos(file, &f);
+        p = 0;
+    }
+    fsetpos(file, pos);
+    return -1;
+}

@@ -166,7 +166,7 @@ extern const struct tag_funcs tag_funcs[HTML_TAGS];
    html start
  */
 struct html{
-    int type;
+    enum HtmlTag type;
     struct html *parent;
     struct DLlist *child;
     void *data;

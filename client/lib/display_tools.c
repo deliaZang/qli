@@ -2,45 +2,90 @@
 #include "qli.h"
 
 static void
-before_default(struct html *cur){
-    if(NULL == cur || NULL == cur->parent) return;
-    before_default(cur->parent);
-    addch('\t');
+display_html(const struct DLlist *root){
+    if(NULL == root) return;
+    struct html *h;
+    const struct DLlist *temp = root;
+    do{
+        temp = temp->next;
+        h = getdata(temp);
+        before(h);
+        dothis(h);
+        after(h);
+    }while(temp != root);
+}
+
+void
+display_tab(const struct tab *tab){
+    initscr();
+    display_html(tab->root);
+    getch();
+    endwin();
 }
 
 static void
-after_default(struct html *cur){
-    if(NULL == cur) return;
-    addch('\n');
+before_default(struct html *cur){
 }
-
 static void
 dothis_default(struct html *cur){
     if(NULL == cur) return;
-    attron(A_STANDOUT);
-    addstr(html_tag[cur->type]);
-    attroff(A_STANDOUT);
+    display_html(cur->child);
+}
+static void
+after_default(struct html *cur){
 }
 
 static void
-dothis_print_data(struct html *cur){
-    if(NULL == cur || NULL == cur->data) return;
+before_none(struct html *cur){
+}
+static void
+dothis_none(struct html *cur){
+    if(NULL == cur) return;
+    addstr((char*)cur->data);
+    dothis_default(cur);
+}
+static void
+after_none(struct html *cur){
+}
+
+static void
+before_img(struct html *cur){
+    attron(A_BOLD);
+}
+static void
+dothis_img(struct html *cur){
+    addstr("[图片]\n");
+    dothis_default(cur);
+}
+static void
+after_img(struct html *cur){
+    attroff(A_BOLD);
+}
+
+static void
+before_a(struct html *cur){
     attron(A_UNDERLINE);
-    addstr((char *)cur->data);
+}
+static void
+dothis_a(struct html *cur){
+    dothis_default(cur);
+}
+static void
+after_a(struct html *cur){
     attroff(A_UNDERLINE);
 }
 
 #define DEFAULT_FUNCS {(tag_func)before_default, (tag_func)dothis_default, (tag_func)after_default}
 
 const struct tag_funcs tag_funcs[HTML_TAGS] = {
-	[HTML_TAG_NONE] = {(tag_func)before_default, (tag_func)dothis_print_data, (tag_func)after_default},
+	[HTML_TAG_NONE] = {(tag_func)before_none, (tag_func)dothis_none, (tag_func)after_none},
 	
 	[HTML_TAG_UNKNOWN] = DEFAULT_FUNCS,
 	
 	[HTML_TAG_COMMENT] = DEFAULT_FUNCS,
 	[HTML_TAG_DOCTYPE] = DEFAULT_FUNCS,
 	
-	[HTML_TAG_A] = {(tag_func)before_default, (tag_func)dothis_print_data, (tag_func)after_default},
+	[HTML_TAG_A] = {(tag_func)before_a, (tag_func)dothis_a, (tag_func)after_a},
 	[HTML_TAG_ABBR] = DEFAULT_FUNCS,
 	[HTML_TAG_ACRONYM] = DEFAULT_FUNCS,
 	[HTML_TAG_ADDRESS] = DEFAULT_FUNCS,
@@ -91,7 +136,7 @@ const struct tag_funcs tag_funcs[HTML_TAGS] = {
 	
 	[HTML_TAG_I] = DEFAULT_FUNCS,
 	[HTML_TAG_IFRAME] = DEFAULT_FUNCS,
-	[HTML_TAG_IMG] = {(tag_func)before_default, (tag_func)dothis_print_data, (tag_func)after_default},
+	[HTML_TAG_IMG] = {(tag_func)before_img, (tag_func)dothis_img, (tag_func)after_img},
 	[HTML_TAG_INPUT] = DEFAULT_FUNCS,
 	[HTML_TAG_INS] = DEFAULT_FUNCS,
 	
@@ -148,28 +193,3 @@ const struct tag_funcs tag_funcs[HTML_TAGS] = {
 	
 	[HTML_TAG_VAR] = DEFAULT_FUNCS,
 };
-
-static void
-display_html(const struct DLlist *root){
-    if(NULL == root) return;
-    struct html *h;
-    const struct DLlist *temp = root;
-    do{
-        temp = temp->next;
-        h = getdata(temp);
-
-        before(h);
-        dothis(h);
-        after(h);
-
-        display_html(h->child);
-    }while(temp != root);
-}
-
-void
-display_tab(const struct tab *tab){
-    initscr();
-    display_html(tab->root);
-    getch();
-    endwin();
-}
