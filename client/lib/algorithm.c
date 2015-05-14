@@ -1,7 +1,7 @@
 #include "qli.h"
 
 struct DLlist *
-insert(struct DLlist *cur, void *data){
+DLlist_insert(struct DLlist *cur, void *data){
     struct DLlist *node = Calloc(1, sizeof(struct DLlist));
     node->data = data;
     if(NULL == cur){
@@ -17,7 +17,7 @@ insert(struct DLlist *cur, void *data){
 }
 
 struct DLlist *
-delete(struct DLlist *cur){
+DLlist_delete(struct DLlist *cur){
     if(NULL != cur){
         struct DLlist *prev = cur->prev, *next = cur->next;
         cur->prev->next = next;
@@ -31,7 +31,7 @@ delete(struct DLlist *cur){
 }
 
 void *
-getdata(const struct DLlist *cur){
+DLlist_getdata(const struct DLlist *cur){
     if(NULL != cur){
         return cur->data;
     }

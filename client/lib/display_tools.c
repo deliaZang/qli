@@ -1,6 +1,53 @@
 #include <ncurses.h>
 #include "qli.h"
 
+#ifdef _MY_DEBUG
+void
+before_debug(struct html *cur){
+    if(NULL == cur || NULL == cur->parent) return;
+    before_debug(cur->parent);
+    fputc('\t', stdout);
+}
+
+void
+after_debug(struct html *cur){
+    if(NULL == cur) return;
+    fputc('\n', stdout);
+}
+
+void
+dothis_debug(struct html *cur){
+    if(NULL == cur) return;
+    printf("%s ", html_tag[cur->type]);
+    if(NULL != cur->data){
+        printf("%s", (char *)cur->data);
+    }
+}
+
+void
+display_html(const struct DLlist *root){
+    if(NULL == root) return;
+    struct html *h;
+    struct DLlist *temp = root;
+    do{
+        temp = temp->next;
+        h = DLlist_getdata(temp);
+
+        before_debug(h);
+        dothis_debug(h);
+        after_debug(h);
+
+        display_html(h->child);
+    }while(temp != root);
+}
+
+void
+display_tab(const struct tab *tab){
+    display_html(tab->root);
+}
+
+#else
+
 static void
 display_html(const struct DLlist *root){
     if(NULL == root) return;
@@ -8,7 +55,7 @@ display_html(const struct DLlist *root){
     const struct DLlist *temp = root;
     do{
         temp = temp->next;
-        h = getdata(temp);
+        h = DLlist_getdata(temp);
         before(h);
         dothis(h);
         after(h);
@@ -22,6 +69,7 @@ display_tab(const struct tab *tab){
     getch();
     endwin();
 }
+#endif
 
 static void
 before_default(struct html *cur){
@@ -29,6 +77,11 @@ before_default(struct html *cur){
 static void
 dothis_default(struct html *cur){
     if(NULL == cur) return;
+    // FIXME
+    if(NULL != cur->data){
+        addstr((char*)cur->data);
+    }
+
     display_html(cur->child);
 }
 static void

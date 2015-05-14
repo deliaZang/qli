@@ -5,10 +5,10 @@ int main(void){
     int i;
     struct DLlist *list = NULL;
     for(i = 0; i < 5; ++i){
-        list = insert(list, chs[i]);
+        list = DLlist_insert(list, chs[i]);
     }
     for(i = 0; i < 5; ++i){
-        list = delete(list);
+        list = DLlist_delete(list);
     }
     return 0;
 }

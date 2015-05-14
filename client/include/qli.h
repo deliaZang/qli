@@ -85,6 +85,8 @@ long
 length_end_with(FILE *file, char ch);
 char *
 copy_end_with(FILE *file, int ch);
+long
+sunday(FILE *file, const char *pat);
 /**
    file_tools end
  */
@@ -138,11 +140,11 @@ struct DLlist{
 };
 
 struct DLlist *
-insert(struct DLlist *cur, void *data);
+DLlist_insert(struct DLlist *cur, void *data);
 struct DLlist *
-delete(struct DLlist *cur);
+DLlist_delete(struct DLlist *cur);
 void *
-getdata(const struct DLlist *cur);
+DLlist_getdata(const struct DLlist *cur);
 /**
    algorithm end
  */

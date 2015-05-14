@@ -98,21 +98,19 @@ index_of(const char *src, char c){
 int
 file_pos_char(FILE *file, long pos){
     int ch;
-    fpos_t old;
-    fgetpos(file, &old);
-    fsetpos(file, &pos);
+    long old = ftell(file);
+    fseek(file, pos, SEEK_SET);
     ch = fgetc(file);
-    fsetpos(file, &old);
+    fseek(file, old, SEEK_SET);
     return ch;
 }
 
 long
-file_length(FILE *file){
-    long pos, res;
-    fgetpos(file, &pos);
+file_bytes(FILE *file){
+    long res, pos = ftell(file);
     fseek(file, 0, SEEK_END);
-    fgetpos(file, &res);
-    fsetpos(file, &pos);
+    res = ftell(file);
+    fseek(file, pos, SEEK_SET);
     return res;
 }
 
@@ -121,23 +119,22 @@ sunday(FILE *file, const char *pat){
     if(NULL == file || NULL == pat){
         return -1;
     }
-    long pos, f_len, p_len;
-    fgetpos(file, &pos);
-    f_len = file_length(file) - pos;
+    long f_len, p_len;
+    const long pos = ftell(file);
+    f_len = file_bytes(file);
     p_len = strlen(pat);
-    fsetpos(file, &pos);
 
     int idx;
-    long f = 0, p = 0;
+    long f = pos, p = 0;
 
     while(!feof(file) && p < p_len){
         while(fgetc(file) == pat[p]){
             ++f, ++p;
             if(p >= p_len){
-                fsetpos(file, &pos);
+                fseek(file, pos, SEEK_SET);
                 return f-p;
             }else if(f >= f_len){
-                fsetpos(file, pos);
+                fseek(file, pos, SEEK_SET);
                 return -1;
             }
         }
@@ -147,9 +144,25 @@ sunday(FILE *file, const char *pat){
         }else{
             f = f-p+p_len-idx;
         }
-        fsetpos(file, &f);
+        fseek(file, f, SEEK_SET);
         p = 0;
     }
-    fsetpos(file, pos);
+    fseek(file, pos, SEEK_SET);
     return -1;
+}
+
+void
+file_over(FILE *file, const char *str){
+    fseek(file, sunday(file, str)+strlen(str), SEEK_SET);
+}
+
+char *
+copy_to_eof(FILE *file){
+    char *str;
+    long i, len = file_bytes(file) - ftell(file);
+    str = Calloc(len + 1, sizeof(char));
+    for(i = 0; i < len; ++i){
+        str[i] = fgetc(file);
+    }
+    return str;
 }

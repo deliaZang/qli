@@ -1,3 +1,4 @@
+#include <setjmp.h>
 #include "qli.h"
 
 #define MAX_TAG_SIZE 20
@@ -123,8 +124,11 @@ const char *html_tag[HTML_TAGS] = {
 #define PARSE_FAIL 1
 #define PARSE_COMPLETE 2
 
-static struct DLlist *
-parse_html(const struct html *parent, struct DLlist *list, FILE *file);
+struct tab *cur_tab = NULL;
+jmp_buf jmp_init_tab;
+
+static void
+parse_html(const struct html *parent, struct DLlist **list, FILE *file);
 
 static struct html *
 new_tag(enum HtmlTag type, struct html *parent, void *data){
@@ -140,16 +144,18 @@ jurge_entity(FILE *file){
     int i, c;
     static char buf[MAX_TAG_SIZE+1];
     for(i = 0; i < MAX_TAG_SIZE; ++i){
-        if(EOF != (c = fgetc(file))){
-            switch(c){
-                case '>':
-                    ungetc(c, file);
-                case ' ':
-                    buf[i] = 0;
-                    goto next;
-                default:
-                    buf[i] = c;
-            }
+        c = fgetc(file);
+        if(feof(file)){
+            longjmp(jmp_init_tab, 1);
+        }
+        switch(c){
+            case '>':
+                ungetc(c, file);
+            case ' ':
+                buf[i] = 0;
+                goto next;
+            default:
+                buf[i] = c;
         }
     }
 next:
@@ -168,8 +174,12 @@ static int
 parse_attribute(struct html *tag, FILE *file){
     int c;
     char *str;
-    while(EOF != (c = fgetc(file))){
+    while(1){
+        c = fgetc(file);
         if(isspace(c)) continue;
+        if(feof(file)){
+            longjmp(jmp_init_tab, 1);
+        }
         if('/' == c){
             if('>' == fgetc(file)){
                 return PARSE_COMPLETE;
@@ -211,6 +221,9 @@ parse_tail(const struct html *tag, FILE *file){
         return PARSE_COMPLETE;
     }else{
         for(i = 0; i < strlen(html_tag[tag->type]); ++i){
+            if(feof(file)){
+                longjmp(jmp_init_tab, 1);
+            }
             if(html_tag[tag->type][i] != c){
                 return PARSE_FAIL;
             }
@@ -223,62 +236,82 @@ parse_tail(const struct html *tag, FILE *file){
     }
 }
 
-// FIXME
 static int
 do_tag(struct DLlist *list, FILE *file){
     int res;
-    struct html *tag = getdata(list);
+    struct html *tag = DLlist_getdata(list);
     if(PARSE_SUCCESS != (res = parse_attribute(tag, file))){
         return res;
     }
-    tag->child = parse_html(tag, tag->child, file);
-    return parse_tail(tag, file);
+again:
+    parse_html(tag, &(tag->child), file);
+    // FIXME 进一步提高容错，若是父标签的结尾则返回，否则继续
+    if(PARSE_FAIL == parse_tail(tag, file)){
+        goto again;
+    }
+    return PARSE_COMPLETE;
 }
 
 static void
 do_ignore(FILE *file){
     int c;
-    while(EOF != (c = fgetc(file))){
+    while(1){
+        c = fgetc(file);
+        if(feof(file)){
+            longjmp(jmp_init_tab, 1);
+        }
         if('>' == c) break;
     }
 }
 
-static struct DLlist *
-parse_html(const struct html *parent, struct DLlist *list, FILE *file){
+static void
+parse_html(const struct html *parent, struct DLlist **list, FILE *file){
     int c;
-    struct html *tag;
-    while(EOF != (c = fgetc(file))){
+    struct html *tag = NULL;
+    while(1){
+        c = fgetc(file);
         if(isspace(c)) continue;
-        if('<' == c){
-            c = fgetc(file);
-            // FIXME 当注释中含有 '>' 时会有点问题
-            if('!' == c){
-                do_ignore(file);
-                continue;
-            }else if('/' == c){
-                return list;
-            }else{
-                enum HtmlTag type;
-                ungetc(c, file);
-                type = jurge_entity(file);
-                if(HTML_TAG_UNKNOWN == type){
-                    do_ignore(file);
-                    continue;
-                }else if(HTML_TAG_IMG == type || HTML_TAG_A == type){
-                    tag = new_tag(type, parent, NULL);
-                }else{
-                    tag = new_tag(type, parent, NULL);
-                }
-                list = insert(list, tag);
-                do_tag(list, file);
-            }
-        }else{
+        if(feof(file)){
+            longjmp(jmp_init_tab, 1);
+        }
+        if('<' != c){
             ungetc(c, file);
-            tag = new_tag(HTML_TAG_NONE, parent, copy_end_with(file, '<'));
-            list = insert(list, tag);
+            char *str = copy_end_with(file, '<');
+            if(NULL == str){
+                str = copy_to_eof(file);
+            }
+            tag = new_tag(HTML_TAG_NONE, parent, str);
+            *list = DLlist_insert(*list, tag);
+        }else{
+            c = fgetc(file);
+            if('/' == c){
+                return;
+            }else{
+                ungetc(c, file);
+                enum HtmlTag type = jurge_entity(file);
+                switch(type){
+                    case HTML_TAG_DOCTYPE:
+                    case HTML_TAG_UNKNOWN:
+                        do_ignore(file);
+                        break;
+                    case HTML_TAG_HEAD:
+                        file_over(file, "</head>");
+                        break;
+                    case HTML_TAG_SCRIPT:
+                        file_over(file, "</script>");
+                        break;
+                    case HTML_TAG_COMMENT:
+                        // FIXME
+                        file_over(file, "-->");
+                        break;
+                    default:
+                        tag = new_tag(type, parent, NULL);
+                        *list = DLlist_insert(*list, tag);
+                        do_tag(*list, file);
+                }
+            }
         }
     }
-    return list;
 }
 
 static void
@@ -286,25 +319,22 @@ distroy_html(struct DLlist *root){
     if(NULL == root) return;
     struct html *h;
     do{
-        h = getdata(root);
+        h = DLlist_getdata(root);
         distroy_html(h->child);
         free(h->data);
         free(h);
-        root = delete(root);
+        root = DLlist_delete(root);
     }while(NULL != root);
 }
 
 struct tab*
 init_tab(FILE *file){
     struct DLlist *root;
-    struct tab *cur_tab = NULL;
+    cur_tab = Calloc(1, sizeof(struct tab));
     if(NULL != file){
-        rewind(file);
-        if(NULL != (root = parse_html(NULL, NULL, file))){
-            cur_tab = Calloc(1, sizeof(struct tab));
-            cur_tab->root = root;
-        }else{
-            distroy_html(cur_tab->root);
+        if(0 == setjmp(jmp_init_tab)){
+            rewind(file);
+            parse_html(NULL, &(cur_tab->root), file);
         }
     }
     return cur_tab;
