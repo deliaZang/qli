@@ -57,6 +57,7 @@ display_html(const struct DLlist *root){
         h = DLlist_getdata(temp);
         before(h);
         dothis(h);
+        display_html(h->child);
         after(h);
     }while(temp != root);
 }
@@ -64,18 +65,60 @@ display_html(const struct DLlist *root){
 #define max_row(tab) ((tab)->disp_info.max_row)
 #define max_col(tab) ((tab)->disp_info.max_col)
 #define win_tab(tab) ((tab)->disp_info.win)
+#define MAX_PAGE_LINES 1000
 
 void
 display_tab(struct tab *tab){
-    int y, x;
     initscr();
+    cbreak();
+    noecho();
     // FIXME
-    win_tab(tab) = stdscr;
     getmaxyx(stdscr, max_row(tab), max_col(tab));
+    win_tab(tab) = newpad(MAX_PAGE_LINES, max_col(tab));
+    keypad(win_tab(tab), TRUE);
 
     display_html(tab->root);
 
-    getch();
+    int ch;
+    int cur_line = 0;
+    wmove(win_tab(tab), 0, 0);
+    do{
+        int y = getcury(win_tab(tab)), x = getcurx(win_tab(tab));
+        switch(ch){
+            case KEY_DOWN:
+                if(y < max_row(tab)-1){
+                    wmove(win_tab(tab), ++y, x);
+                }else{
+                    ++cur_line;
+                }
+                break;
+            case KEY_UP:
+                if(0 == y){
+                    --cur_line;
+                }else{
+                    wmove(win_tab(tab), --y, x);
+                }
+                break;
+            case KEY_LEFT:
+                if(x != 0){
+                    wmove(win_tab(tab), y, --x);
+                }
+                break;
+            case KEY_RIGHT:
+                if(x != max_col(tab)-1){
+                    wmove(win_tab(tab), y, ++x);
+                }
+                break;
+            default:
+                break;
+        }
+        refresh();
+        clear();
+        prefresh(win_tab(tab), cur_line, 0, 0, 0, max_row(tab)-1, max_col(tab)-1);
+
+    }while('q' != (ch = wgetch(win_tab(tab))));
+
+    delwin(win_tab(tab));
     endwin();
 }
 #endif
@@ -85,13 +128,6 @@ before_default(struct html *cur){
 }
 static void
 dothis_default(struct html *cur){
-    if(NULL == cur || (getcury(win_tab(cur_tab)) > max_row(cur_tab))) return;
-    // FIXME
-    if(NULL != cur->data){
-        addstr((char*)cur->data);
-    }
-
-    display_html(cur->child);
 }
 static void
 after_default(struct html *cur){
@@ -102,43 +138,64 @@ before_none(struct html *cur){
 }
 static void
 dothis_none(struct html *cur){
-    if(NULL == cur) return;
-    addstr((char*)cur->data);
-    dothis_default(cur);
+    if(NULL == cur || NULL == cur->data) return;
+    waddstr(win_tab(cur_tab), (char*)cur->data);
 }
 static void
 after_none(struct html *cur){
-    addch('\n');
 }
 
 static void
 before_img(struct html *cur){
-    attron(A_BOLD);
+    wattron(win_tab(cur_tab), A_BOLD);
 }
 static void
 dothis_img(struct html *cur){
-    addstr("[图片]\n");
-    dothis_default(cur);
+    waddstr(win_tab(cur_tab), "[图片]\n");
 }
 static void
 after_img(struct html *cur){
-    attroff(A_BOLD);
+    wattroff(win_tab(cur_tab), A_BOLD);
 }
 
 static void
 before_a(struct html *cur){
-    attron(A_UNDERLINE);
+    wattron(win_tab(cur_tab), A_UNDERLINE);
 }
 static void
 dothis_a(struct html *cur){
-    dothis_default(cur);
 }
 static void
 after_a(struct html *cur){
-    attroff(A_UNDERLINE);
+    wattroff(win_tab(cur_tab), A_UNDERLINE);
+}
+
+static void
+before_br(struct html *cur){
+}
+static void
+dothis_br(struct html *cur){
+    waddch(win_tab(cur_tab), '\n');
+}
+static void
+after_br(struct html *cur){
+}
+
+static void
+before_h(struct html *cur){
+    wattron(win_tab(cur_tab), A_BOLD);
+}
+static void
+dothis_h(struct html *cur){
+}
+static void
+after_h(struct html *cur){
+    waddch(win_tab(cur_tab), '\n');
+    wattroff(win_tab(cur_tab), A_BOLD);
 }
 
 #define DEFAULT_FUNCS {(tag_func)before_default, (tag_func)dothis_default, (tag_func)after_default}
+#define H_FUNCS {(tag_func)before_h, (tag_func)dothis_h, (tag_func)after_h}
 
 const struct tag_funcs tag_funcs[HTML_TAGS] = {
 	[HTML_TAG_NONE] = {(tag_func)before_none, (tag_func)dothis_none, (tag_func)after_none},
@@ -162,7 +219,7 @@ const struct tag_funcs tag_funcs[HTML_TAGS] = {
 	[HTML_TAG_BIG] = DEFAULT_FUNCS,
 	[HTML_TAG_BLOCKQUOTE] = DEFAULT_FUNCS,
 	[HTML_TAG_BODY] = DEFAULT_FUNCS,
-	[HTML_TAG_BR] = DEFAULT_FUNCS,
+	[HTML_TAG_BR] = {(tag_func)before_br, (tag_func)dothis_br, (tag_func)after_br},
 	[HTML_TAG_BUTTON] = DEFAULT_FUNCS,
 	
 	[HTML_TAG_CAPTION] = DEFAULT_FUNCS,
@@ -187,12 +244,12 @@ const struct tag_funcs tag_funcs[HTML_TAGS] = {
 	[HTML_TAG_FRAME] = DEFAULT_FUNCS,
 	[HTML_TAG_FRAMESET] = DEFAULT_FUNCS,
 	
-	[HTML_TAG_H1] = DEFAULT_FUNCS,
-	[HTML_TAG_H2] = DEFAULT_FUNCS,
-	[HTML_TAG_H3] = DEFAULT_FUNCS,
-	[HTML_TAG_H4] = DEFAULT_FUNCS,
-	[HTML_TAG_H5] = DEFAULT_FUNCS,
-	[HTML_TAG_H6] = DEFAULT_FUNCS,
+	[HTML_TAG_H1] = H_FUNCS,
+	[HTML_TAG_H2] = H_FUNCS,
+	[HTML_TAG_H3] = H_FUNCS,
+	[HTML_TAG_H4] = H_FUNCS,
+	[HTML_TAG_H5] = H_FUNCS,
+	[HTML_TAG_H6] = H_FUNCS,
 	[HTML_TAG_HEAD] = DEFAULT_FUNCS,
 	[HTML_TAG_HR] = DEFAULT_FUNCS,
 	[HTML_TAG_HTML] = DEFAULT_FUNCS,

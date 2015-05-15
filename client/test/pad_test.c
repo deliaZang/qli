@@ -4,11 +4,10 @@ int main()
     initscr();
 	cbreak();
     noecho();
-    keypad(stdscr, TRUE);
 
     WINDOW *pad;
 
-    pad = newpad(10,10);
+    pad = newpad(1000, getmaxx(stdscr));
     keypad(pad, TRUE);
 
     refresh();
