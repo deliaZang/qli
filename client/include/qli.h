@@ -9,6 +9,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <unistd.h>
+#include <ncurses.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -158,6 +159,10 @@ struct tag_funcs{
     tag_func dothis;
     tag_func after;
 };
+struct display{
+    WINDOW *win;
+    int max_row, max_col;
+};
 
 extern const struct tag_funcs tag_funcs[HTML_TAGS];
 /**
@@ -174,14 +179,16 @@ struct html{
     void *data;
 };
 
-struct tab{
-    struct DLlist *root;
-    FILE * file;
-};
-
 struct link{
     struct html *item;
 };
+
+struct tab{
+    struct DLlist *root;
+    FILE *file;
+    struct display disp_info;
+};
+extern struct tab *cur_tab;
 
 #define before(tag) (tag_funcs[(tag)->type].before(tag))
 #define after(tag) (tag_funcs[(tag)->type].after(tag))
@@ -194,7 +201,7 @@ init_tab(FILE *file);
 void
 distroy_tab(struct tab *tab);
 void
-display_tab(const struct tab *tab);
+display_tab(struct tab *tab);
 /**
    html end
  */

@@ -1,4 +1,3 @@
-#include <ncurses.h>
 #include "qli.h"
 
 #ifdef _MY_DEBUG
@@ -62,10 +61,20 @@ display_html(const struct DLlist *root){
     }while(temp != root);
 }
 
+#define max_row(tab) ((tab)->disp_info.max_row)
+#define max_col(tab) ((tab)->disp_info.max_col)
+#define win_tab(tab) ((tab)->disp_info.win)
+
 void
-display_tab(const struct tab *tab){
+display_tab(struct tab *tab){
+    int y, x;
     initscr();
+    // FIXME
+    win_tab(tab) = stdscr;
+    getmaxyx(stdscr, max_row(tab), max_col(tab));
+
     display_html(tab->root);
+
     getch();
     endwin();
 }
@@ -76,7 +85,7 @@ before_default(struct html *cur){
 }
 static void
 dothis_default(struct html *cur){
-    if(NULL == cur) return;
+    if(NULL == cur || (getcury(win_tab(cur_tab)) > max_row(cur_tab))) return;
     // FIXME
     if(NULL != cur->data){
         addstr((char*)cur->data);
@@ -99,6 +108,7 @@ dothis_none(struct html *cur){
 }
 static void
 after_none(struct html *cur){
+    addch('\n');
 }
 
 static void

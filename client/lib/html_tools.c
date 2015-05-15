@@ -9,7 +9,7 @@ const char *html_tag[HTML_TAGS] = {
 	[HTML_TAG_UNKNOWN] = "",
 	
 	[HTML_TAG_COMMENT] = "!--",
-	[HTML_TAG_DOCTYPE] = "!doctype",
+	[HTML_TAG_DOCTYPE] = "!DOCTYPE",
 	
 	[HTML_TAG_A] = "a",
 	[HTML_TAG_ABBR] = "abbr",
@@ -225,6 +225,7 @@ parse_tail(const struct html *tag, FILE *file){
                 longjmp(jmp_init_tab, 1);
             }
             if(html_tag[tag->type][i] != c){
+                while(!feof(file) && '>' != fgetc(file));
                 return PARSE_FAIL;
             }
             c = fgetc(file);
@@ -289,19 +290,21 @@ parse_html(const struct html *parent, struct DLlist **list, FILE *file){
             }else{
                 ungetc(c, file);
                 enum HtmlTag type = jurge_entity(file);
+                int len;
+                char *end;
                 switch(type){
                     case HTML_TAG_DOCTYPE:
                     case HTML_TAG_UNKNOWN:
                         do_ignore(file);
                         break;
                     case HTML_TAG_HEAD:
-                        file_over(file, "</head>");
-                        break;
                     case HTML_TAG_SCRIPT:
-                        file_over(file, "</script>");
-                        break;
+                        len = strlen(html_tag[type])+4;
+                        *end = Calloc(len, sizeof(char));
+                        snprintf(end, len, "</%s>", html_tag[type]);
+                        file_over(file, end);
+                        free(end);
                     case HTML_TAG_COMMENT:
-                        // FIXME
                         file_over(file, "-->");
                         break;
                     default:
