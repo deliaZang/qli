@@ -1,5 +1,10 @@
 #include "qli.h"
 
+#define max_row(tab) ((tab)->disp_info.max_row)
+#define max_col(tab) ((tab)->disp_info.max_col)
+#define win_tab(tab) ((tab)->disp_info.win)
+#define MAX_PAGE_LINES 1000
+
 #ifdef _MY_DEBUG
 void
 before_debug(struct html *cur){
@@ -41,7 +46,7 @@ display_html(const struct DLlist *root){
 }
 
 void
-display_tab(const struct tab *tab){
+display_tab(struct tab *tab){
     display_html(tab->root);
 }
 
@@ -62,17 +67,12 @@ display_html(const struct DLlist *root){
     }while(temp != root);
 }
 
-#define max_row(tab) ((tab)->disp_info.max_row)
-#define max_col(tab) ((tab)->disp_info.max_col)
-#define win_tab(tab) ((tab)->disp_info.win)
-#define MAX_PAGE_LINES 1000
-
 void
 display_tab(struct tab *tab){
     initscr();
     cbreak();
     noecho();
-    // FIXME
+
     getmaxyx(stdscr, max_row(tab), max_col(tab));
     win_tab(tab) = newpad(MAX_PAGE_LINES, max_col(tab));
     keypad(win_tab(tab), TRUE);
@@ -81,13 +81,17 @@ display_tab(struct tab *tab){
 
     int ch;
     int cur_line = 0;
-    wmove(win_tab(tab), 0, 0);
-    do{
+    move(0, 0);
+    refresh();
+    clear();
+    prefresh(win_tab(tab), cur_line, 0, 0, 0, max_row(tab)-1, max_col(tab)-1);
+
+    while('q' != (ch = wgetch(win_tab(tab)))){
         int y = getcury(win_tab(tab)), x = getcurx(win_tab(tab));
         switch(ch){
             case KEY_DOWN:
                 if(y < max_row(tab)-1){
-                    wmove(win_tab(tab), ++y, x);
+                    ++y;
                 }else{
                     ++cur_line;
                 }
@@ -96,31 +100,32 @@ display_tab(struct tab *tab){
                 if(0 == y){
                     --cur_line;
                 }else{
-                    wmove(win_tab(tab), --y, x);
+                    --y;
                 }
                 break;
             case KEY_LEFT:
                 if(x != 0){
-                    wmove(win_tab(tab), y, --x);
+                    --x;
                 }
                 break;
             case KEY_RIGHT:
                 if(x != max_col(tab)-1){
-                    wmove(win_tab(tab), y, ++x);
+                    ++x;
                 }
                 break;
             default:
                 break;
         }
+        move(y, x);
         refresh();
         clear();
         prefresh(win_tab(tab), cur_line, 0, 0, 0, max_row(tab)-1, max_col(tab)-1);
-
-    }while('q' != (ch = wgetch(win_tab(tab))));
+    }
 
     delwin(win_tab(tab));
     endwin();
 }
+
 #endif
 
 static void

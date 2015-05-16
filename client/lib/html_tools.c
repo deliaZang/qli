@@ -300,10 +300,11 @@ parse_html(const struct html *parent, struct DLlist **list, FILE *file){
                     case HTML_TAG_HEAD:
                     case HTML_TAG_SCRIPT:
                         len = strlen(html_tag[type])+4;
-                        *end = Calloc(len, sizeof(char));
+                        end = Calloc(len, sizeof(char));
                         snprintf(end, len, "</%s>", html_tag[type]);
                         file_over(file, end);
                         free(end);
+                        break;
                     case HTML_TAG_COMMENT:
                         file_over(file, "-->");
                         break;

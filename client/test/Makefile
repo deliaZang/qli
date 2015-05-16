@@ -1,6 +1,10 @@
 CFLAGS  += -g3 -Wall -I../include
 LDFLAGS += -L../lib -lqli -lncursesw
 
+ifeq ($(debug), true)
+DEBUG = debug=true
+endif
+
 SRC_DIR=.
 BIN_DIR=./bin
 
@@ -20,7 +24,7 @@ clean:
 
 begin:
 	@mkdir -p ${BIN_DIR}
-	(cd ../lib && make)
+	(cd ../lib && make ${DEBUG})
 
 ${BIN_DIR}/%: %.c
 	${CC} ${CFLAGS} -o $@ $^ ${LDFLAGS}
