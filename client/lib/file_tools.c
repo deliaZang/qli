@@ -166,3 +166,12 @@ copy_to_eof(FILE *file){
     }
     return str;
 }
+
+FILE *
+Tmpfile(){
+    FILE *f = tmpfile();
+    if(NULL == f){
+        err_sys("tmpfile error");
+    }
+    return f;
+}

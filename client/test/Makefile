@@ -14,7 +14,8 @@ BINS = \
 	${BIN_DIR}/list_test			\
 	${BIN_DIR}/html_test			\
 	${BIN_DIR}/sunday_test			\
-	${BIN_DIR}/pad_test
+	${BIN_DIR}/pad_test				\
+	${BIN_DIR}/map_test
 
 
 all: begin ${BINS}

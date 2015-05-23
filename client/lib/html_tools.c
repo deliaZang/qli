@@ -174,6 +174,7 @@ static int
 parse_attribute(struct html *tag, FILE *file){
     int c;
     char *str;
+again:
     while(1){
         c = fgetc(file);
         if(isspace(c)) continue;
@@ -194,9 +195,13 @@ parse_attribute(struct html *tag, FILE *file){
             str = copy_end_with(file, '=');
             if(0 != strcmp(str, attribute)){
                 free(str);
-                str = copy_end_with(file, ' ');
-                free(str);
-                continue;
+                while(!feof(file)){
+                    c = fgetc(file);
+                    if(' ' == c || '>' == c){
+                        ungetc(c, file);
+                        goto again;
+                    }
+                }
             }
             fgetc(file), c = fgetc(file);
             if('\'' != c && '\"' != c){

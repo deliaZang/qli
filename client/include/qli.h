@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <netdb.h>
 #include <ctype.h>
+#include <locale.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -88,6 +89,8 @@ char *
 copy_end_with(FILE *file, int ch);
 long
 sunday(FILE *file, const char *pat);
+FILE *
+Tmpfile();
 /**
    file_tools end
  */
@@ -134,6 +137,7 @@ err_quit(const char *fmt, ...);
 /**
    algorithm start
  */
+// FIXME list, map 函数写的不好，但是先保证能用
 struct DLlist{
     struct DLlist *prev;
     struct DLlist *next;
@@ -146,6 +150,18 @@ struct DLlist *
 DLlist_delete(struct DLlist *cur);
 void *
 DLlist_getdata(const struct DLlist *cur);
+
+struct Map{
+    void *key;
+    void *value;
+};
+
+void *
+Map_add(void *cur, void *key, void *value);
+void *
+Map_get(const void *start, const void *key);
+void
+Map_delete(void *map, const void *key);
 /**
    algorithm end
  */

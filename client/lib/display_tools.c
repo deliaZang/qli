@@ -80,25 +80,27 @@ display_tab(struct tab *tab){
     display_html(tab->root);
 
     int ch;
-    int cur_line = 0;
-    move(0, 0);
+    int start_line = 0;
+    wmove(win_tab(tab), 0, 0);
     refresh();
     clear();
-    prefresh(win_tab(tab), cur_line, 0, 0, 0, max_row(tab)-1, max_col(tab)-1);
+    prefresh(win_tab(tab), start_line, 0, 0, 0, max_row(tab)-1, max_col(tab)-1);
 
     while('q' != (ch = wgetch(win_tab(tab)))){
-        int y = getcury(win_tab(tab)), x = getcurx(win_tab(tab));
+        int y, x;
+        getyx(win_tab(tab), y, x);
         switch(ch){
             case KEY_DOWN:
-                if(y < max_row(tab)-1){
+                if(y < start_line+max_row(tab)-1){
                     ++y;
                 }else{
-                    ++cur_line;
+                    ++y;
+                    ++start_line;
                 }
                 break;
             case KEY_UP:
-                if(0 == y){
-                    --cur_line;
+                if(start_line == y){
+                    --start_line;
                 }else{
                     --y;
                 }
@@ -116,10 +118,10 @@ display_tab(struct tab *tab){
             default:
                 break;
         }
-        move(y, x);
+        wmove(win_tab(tab), y, x);
         refresh();
         clear();
-        prefresh(win_tab(tab), cur_line, 0, 0, 0, max_row(tab)-1, max_col(tab)-1);
+        prefresh(win_tab(tab), start_line, 0, 0, 0, max_row(tab)-1, max_col(tab)-1);
     }
 
     delwin(win_tab(tab));
@@ -153,25 +155,29 @@ after_none(struct html *cur){
 static void
 before_img(struct html *cur){
     wattron(win_tab(cur_tab), A_BOLD);
+    waddch(win_tab(cur_tab), '\n');
 }
 static void
 dothis_img(struct html *cur){
-    waddstr(win_tab(cur_tab), "[图片]\n");
+    waddstr(win_tab(cur_tab), "[图片]");
 }
 static void
 after_img(struct html *cur){
+    waddch(win_tab(cur_tab), '\n');
     wattroff(win_tab(cur_tab), A_BOLD);
 }
 
 static void
 before_a(struct html *cur){
     wattron(win_tab(cur_tab), A_UNDERLINE);
+    waddch(win_tab(cur_tab), '\n');
 }
 static void
 dothis_a(struct html *cur){
 }
 static void
 after_a(struct html *cur){
+    waddch(win_tab(cur_tab), '\n');
     wattroff(win_tab(cur_tab), A_UNDERLINE);
 }
 
@@ -189,6 +195,7 @@ after_br(struct html *cur){
 static void
 before_h(struct html *cur){
     wattron(win_tab(cur_tab), A_BOLD);
+    waddch(win_tab(cur_tab), '\n');
 }
 static void
 dothis_h(struct html *cur){
