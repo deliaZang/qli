@@ -3,14 +3,14 @@ package edu.zut.cs.qli.article;
 import edu.zut.cs.qli.article.domain.Article;
 import edu.zut.cs.qli.article.service.ArticleManager;
 import edu.zut.cs.qli.catalog.service.CatalogManager;
+import edu.zut.cs.qli.utils.MyPageable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.List;
 
 /**
  * Created by shouhutsh on 15-4-19.
@@ -42,7 +42,12 @@ public class ArticleServiceTest {
 
     @Test
     public void testList(){
-        List<Article> articleList = articleManager.findAll();
+
+        Page<Article> articleList = articleManager.findAll(new MyPageable(0,2));
+        articleList = articleManager.findAll(new MyPageable(1,2));
+        articleList = articleManager.findAll(new MyPageable(2,2));
+        articleList = articleManager.findAll(new MyPageable(3,2));
+
         System.out.println();
     }
 

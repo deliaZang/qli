@@ -1,3 +1,4 @@
+<%@ page import="edu.zut.cs.qli.user.domain.User" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%
     String path = request.getContextPath();
 %>
@@ -33,16 +34,16 @@
                                     <a><span style="font-size: 24px">Linux课程设计</span></a></li>
                                 <li><a href="<%=path%>/article/main.html" target="mainView">首页</a></li>
                                 <li><a href="<%=path%>/article/list.html" target="mainView">目录</a></li>
-                                <li><a href="#">系统模块</a></li>
-                                <li><a href="#">网络模块</a></li>
-                                <%--<% User user = (User) request.getSession().getAttribute("user");
-                                    if (null == user) {%>--%>
+                                <li><a href="#">评论</a></li>
+                                <li><a href="#">笔记</a></li>
+                                <% User user = (User) request.getSession().getAttribute("user");
+                                    if (null == user) {%>--
                                 <li><a href="<%=path%>/user/login.html" target="_self">登录</a></li>
                                 <li><a href="<%=path%>/user/register.html" target="_self">注册</a></li>
-                                <%--<%} else {%>
+                                <%} else {%>
                                 <li><a href="">${user.id} </a></li>
                                 <li><a href="<%=path%>/user/exit.html">退出</a></li>
-                                <%}%>--%>
+                                <%}%>
                                 <li class="disabled"><a href="">换肤</a></li>
                                 <li class="dropdown pull-right">
                                     <a href="" data-toggle="dropdown" class="dropdown-toggle">应用下载<strong
@@ -64,7 +65,7 @@
         <div class="row-fluid" id="main">
             <div class="span12">
                 <iframe name="mainView"
-                        style="border:none; width: 100%; height: 800px; float: inherit;margin-right: 10px;"
+                        style="border:none; width: 100%; height: 80%; float: inherit;margin-right: 10px;"
                         src="<%=path%>/article/main.html"></iframe>
             </div>
         </div>

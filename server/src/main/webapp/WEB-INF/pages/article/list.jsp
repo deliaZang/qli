@@ -20,14 +20,16 @@
   </script>
   <script type="text/javascript">
     $(function($){
-
+      $("a[href='<%=path%>/article/list.html?pageIndex=${counter}']").parent().addClass("bright");
     });
     function doDelete(id){
-      $.ajx({
-        type: "DELETE",
-        url: basePath+"/article/do.html",
+      $.ajax({
+        type: "post",
+        url: "<%=path%>/article/delete.html",
+        data:{id:id},
         success: function (json) {
           alert(json);
+
         },
         error: function () {
           alert("删除失败");
@@ -35,10 +37,16 @@
       });
     }
   </script>
+  <style type="text/css">
+    .bright {
+      font-weight: bolder;
+      font-style: italic;
+    }
+  </style>
 </head>
 <body>
   <div class="container-fluid" align="center">
-    <div class="row-fluid">
+    <div class="row-fluid" style="height:45%">
       <!-- 目录-->
       <table class="table">
         <tr>
@@ -55,7 +63,7 @@
             操作
           </th>
         </tr>
-        <c:forEach items="${articles}" var="a">
+        <c:forEach items="${page.content}" var="a">
           <tr>
             <td><input name="title" type="checkbox" value="全选"/></td>
             <td><a href="<%=path%>/article/show.html?id=${a.id}">${a.title}</a></td>
@@ -83,22 +91,66 @@
     </div>
     <div>
       <nav>
+        总共${page.totalElements}条
+        总共${page.totalPages}页
+        当前页${page.number+1}
+
         <ul class="pagination">
-          <li>
-            <a href="#" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
-            </a>
-          </li>
-          <li><a href="#">1</a></li>
-          <li><a href="#">2</a></li>
-          <li><a href="#">3</a></li>
-          <li><a href="#">4</a></li>
-          <li><a href="#">5</a></li>
-          <li>
-            <a href="#" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
-            </a>
-          </li>
+          <!--如果是第一页-->
+          <c:if test="${page.number == 0}">
+            <li>
+              <a href="javascript:void(0)" aria-label="Previous" title="第一页">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+          </c:if>
+          <!--如果不是第一页-->
+          <c:if test="${page.number > 0}">
+            <li>
+              <a href="<%=path%>/article/list.html?pageIndex=${page.number}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+          </c:if>
+          <!--如果总页数小于6-->
+          <c:if test="${page.totalPages < 6}">
+            <c:forEach var="counter" begin="1" end="${page.totalPages}">
+              <li> <a href="<%=path%>/article/list.html?pageIndex=${counter}">${counter}</a></li>
+            </c:forEach>
+          </c:if>
+          <!--如果总页数不小于6,而且当前页比总页数小3-->
+          <c:if test="${page.totalPages >=6 and page.totalPages-page.number>4}">
+            <li> <a href="<%=path%>/article/list.html?pageIndex=${page.number+1}">${page.number+1}</a></li>
+            <li> <a href="<%=path%>/article/list.html?pageIndex=${page.number+2}">${page.number+2}</a></li>
+            <li> <a href="<%=path%>/article/list.html?pageIndex=${page.number+3}">${page.number+3}</a></li>
+            <li> <a href="<%=path%>/article/list.html?pageIndex=${page.number+4}">${page.number+4}</a></li>
+
+            <li><a href="<%=path%>/article/list.html?pageIndex=${page.totalPages}" aria-label="Next">...${page.totalPages}</a></li>
+          </c:if>
+          <!--如果总页数不小于6-->
+          <c:if test="${page.totalPages >=6 and page.totalPages-page.number<=4}">
+            <li> <a href="<%=path%>/article/list.html?pageIndex=1">1...</a></li>
+            <li> <a href="<%=path%>/article/list.html?pageIndex=${page.totalPages-3}">${page.totalPages-3}</a></li>
+            <li> <a href="<%=path%>/article/list.html?pageIndex=${page.totalPages-2}">${page.totalPages-2}</a></li>
+            <li> <a href="<%=path%>/article/list.html?pageIndex=${page.totalPages-1}">${page.totalPages-1}</a></li>
+
+            <li><a href="<%=path%>/article/list.html?pageIndex=${page.totalPages}" aria-label="Next">${page.totalPages}</a></li>
+          </c:if>
+
+          <c:if test="${page.number+1 >= page.totalPages}">
+            <li>
+              <a href="javascript:void(0)" aria-label="Next" title="最后一页">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </c:if>
+          <c:if test="${page.number+1 < page.totalPages}">
+            <li>
+              <a href="<%=path%>/article/list.html?pageIndex=${page.totalPages}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </c:if>
         </ul>
       </nav>
     </div>

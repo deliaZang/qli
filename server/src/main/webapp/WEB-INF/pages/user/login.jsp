@@ -16,6 +16,8 @@
     </script>
     <script type="text/javascript" src="<%=path%>/resources/js/jquery-1.11.2.min.js"></script>
     <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap.css"  rel="stylesheet"/>
+    <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap-theme.css"  rel="stylesheet"/>
+    <script type="text/javascript" src="<%=path%>/resources/js/bootstrap.min.js"></script>
 </head>
 <style type="text/css">
     .container {
@@ -41,7 +43,7 @@
     </c:if>
 </div>
 <div class="container" align="center">
-    <form class="form-horizontal well" method="post" action="/user/login.html">
+    <form class="form-horizontal well" method="post" action="<%=path%>/user/login.do">
         <div class="panel panel-primary">
             <div class="panel-heading">用户登录</div>
             <div class="panel-body">
