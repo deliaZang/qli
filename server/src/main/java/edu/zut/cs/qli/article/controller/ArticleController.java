@@ -9,10 +9,16 @@ import edu.zut.cs.qli.utils.Uploader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -92,7 +98,6 @@ public class ArticleController extends
         return "删除成功！";
     }
 
-    // FIXME
     @RequestMapping(method = RequestMethod.POST, value = "/imageUp")
     public void imageUp(HttpServletRequest request, HttpServletResponse response) throws Exception {
         request.setCharacterEncoding("utf-8");
@@ -112,6 +117,23 @@ public class ArticleController extends
         } else {
             response.getWriter().print("<script>" + callback + "(" + result + ")</script>");
         }
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/fileUp")
+    public String fileUp(@RequestParam MultipartFile file, Model model){
+        String fileName = file.getOriginalFilename();
+        File targetFile = new File(FileUtil.getBasePath()+"files", fileName);
+        if(!targetFile.exists()){
+            targetFile.mkdirs();
+        }
+
+        try {
+            file.transferTo(targetFile);
+        } catch (IOException e) {
+            model.addAttribute("message", "上传出错！");
+        }
+        model.addAttribute("message", "上传成功！");
+        return edit(0L, model);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/hot", produces = "application/json")

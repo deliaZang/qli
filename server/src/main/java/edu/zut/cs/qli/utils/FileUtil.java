@@ -7,6 +7,9 @@ import java.io.*;
  */
 public class FileUtil {
 
+    public static String getBasePath(){
+        return Thread.currentThread().getContextClassLoader().getResource("").getPath() + "../resources/";
+    }
     // FIXME
     public static String createUniqueName(){
         return System.currentTimeMillis()+"";
@@ -15,8 +18,7 @@ public class FileUtil {
     public static String getHtml(String name){
         StringBuilder builder = new StringBuilder();
         try {
-            String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-            File file = new File(path + "../resources/html/" + name + ".html");
+            File file = new File(getBasePath() + "html/" + name + ".html");
             if(file.exists()) {
                 String line;
                 BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -33,8 +35,7 @@ public class FileUtil {
 
     public static void saveHtml(String name, String content){
         try {
-            String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-            File file = new File(path + "../resources/html/" + name + ".html");
+            File file = new File(getBasePath() + "html/" + name + ".html");
             if(!file.exists())
                 file.createNewFile();
 
