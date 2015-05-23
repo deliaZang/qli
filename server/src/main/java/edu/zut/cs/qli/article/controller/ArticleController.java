@@ -4,6 +4,7 @@ import edu.zut.cs.qli.article.domain.Article;
 import edu.zut.cs.qli.article.service.ArticleManager;
 import edu.zut.cs.qli.base.controller.BaseEntityController;
 import edu.zut.cs.qli.catalog.service.CatalogManager;
+import edu.zut.cs.qli.utils.FileParseUtil;
 import edu.zut.cs.qli.utils.FileUtil;
 import edu.zut.cs.qli.utils.Uploader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,11 +56,13 @@ public class ArticleController extends
         model.addAttribute("articles", articleManager.findAll());
         return "article/main";
     }
+
     @RequestMapping(method = RequestMethod.GET, value = "/list")
     public String list(Model model) {
         model.addAttribute("articles", articleManager.findAll());
         return "article/list";
     }
+
     @RequestMapping(method = RequestMethod.GET, value = "/show")
     public String show(@RequestParam long id, Model model) {
         Article article = articleManager.findDetailById(id);
@@ -80,8 +83,8 @@ public class ArticleController extends
     @RequestMapping(method = RequestMethod.POST, value = "/do")
     @ResponseBody
     public String doSave(@RequestParam(required = false, defaultValue = "0") Long id,
-                  @RequestParam String title,
-                  @RequestParam String content) {
+                         @RequestParam String title,
+                         @RequestParam String content) {
         Article article = (0 == id) ? new Article() : articleManager.findById(id);
         article.setTitle(title);
         article.setName(FileUtil.createUniqueName());
@@ -119,32 +122,32 @@ public class ArticleController extends
         }
     }
 
+    // FIXME 没有添加异常处理，其实只用返回前端说明上传状态就可以了
     @RequestMapping(method = RequestMethod.POST, value = "/fileUp")
     public String fileUp(@RequestParam MultipartFile file, Model model){
         String fileName = file.getOriginalFilename();
-        File targetFile = new File(FileUtil.getBasePath()+"files", fileName);
-        if(!targetFile.exists()){
-            targetFile.mkdirs();
+        if(!(fileName.endsWith(".ppt") || fileName.endsWith(".pptx"))){
+            model.addAttribute("message", "暂只支持ppt格式！");
+            return edit(0L, model);
         }
-
         try {
-            file.transferTo(targetFile);
-        } catch (IOException e) {
+            doSave(0L, fileName, FileParseUtil.getPPTContent(file.getInputStream()));
+        }catch (Exception e){
             model.addAttribute("message", "上传出错！");
         }
         model.addAttribute("message", "上传成功！");
-        return edit(0L, model);
+        return list(model);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/hot", produces = "application/json")
     @ResponseBody
-    public List<Article> getHotList(){
+    public List<Article> getHotList() {
         return this.articleManager.findHot();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/lasted", produces = "application/json")
     @ResponseBody
-    public List<Article> getLastedList(){
+    public List<Article> getLastedList() {
         return this.articleManager.findHot();
     }
 }

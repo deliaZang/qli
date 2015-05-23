@@ -19,7 +19,14 @@
     var basePath = localObj.protocol + "//" + localObj.host + "/";
   </script>
   <script type="text/javascript">
-    $(function($){
+    $(window).load(function () {
+      var msg = '${message}';
+      if (0 != msg.length) {
+        alert(msg);
+      }
+    });
+
+  $(function($){
 
     });
     function doDelete(id){

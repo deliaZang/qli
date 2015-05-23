@@ -25,6 +25,12 @@
     <script type="text/javascript" src="/resources/js/umeditor/lang/zh-cn/zh-cn.js"></script>
 </head>
 <body>
+
+<form action="/article/fileUp.html" method="post" enctype="multipart/form-data">
+    <input type="file" name="file"/>
+    <input type="submit" name="上传"/>
+</form>
+
 <div class="clearfix">
     <div class="container-fluid">
         <div class="row-fluid">
@@ -52,11 +58,6 @@
     </div>
 </div>
 
-<form action="/article/fileUp.html" method="post" enctype="multipart/form-data">
-    <input type="file" name="file"/>
-    <input type="submit" name="上传"/>
-</form>
-
 <script type="text/javascript">
     $(window).load(function () {
         var msg = '${message}';
@@ -65,7 +66,6 @@
         }
     });
 </script>
-
 
 <script type="text/javascript">
     UM.getEditor('myEditor');
