@@ -174,6 +174,9 @@ before_a(struct html *cur){
 }
 static void
 dothis_a(struct html *cur){
+    int y, x;
+    getyx(win_tab(cur_tab), y, x);
+    wprintw(win_tab(cur_tab), "{%d, %d}", y, x);
 }
 static void
 after_a(struct html *cur){

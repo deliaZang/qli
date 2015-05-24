@@ -1,6 +1,6 @@
 #include "qli.h"
 
-char http_head[] = "GET / HTTP/1.0\nHost:127.0.0.1:8080\n\n";
+char http_head[] = "GET /article/list.html HTTP/1.0\nHost:127.0.0.1:8080\n\n";
 
 int
 main(int argc, char *argv[])
@@ -20,8 +20,8 @@ main(int argc, char *argv[])
     Write(sockfd, http_head, strlen(http_head));
 
 #ifdef _MY_DEBUG
-    while(Read(sockfd, recivline, MAXLINE)){
-        Fputs(recivline, stdout);
+    while(0 != (n = Read(sockfd, recivline, MAXLINE))){
+        Write(STDOUT_FILENO, recivline, n);
     }
 #else
     FILE *temp, *file = fdopen(sockfd, "r");
@@ -30,9 +30,9 @@ main(int argc, char *argv[])
             break;
         }
     }
-    temp = Tmpfile();
-    while(Read(sockfd, recivline, MAXLINE)){
-        Write(fileno(temp), recivline, MAXLINE);
+    temp = fopen("abc.txt", "w+");
+    while(0 != (n = Read(sockfd, recivline, MAXLINE))){
+        Write(fileno(temp), recivline, n);
     }
     close(sockfd);
 

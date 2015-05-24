@@ -127,8 +127,9 @@ sunday(FILE *file, const char *pat){
     int idx;
     long f = pos, p = 0;
 
+    int c;
     while(!feof(file) && p < p_len){
-        while(fgetc(file) == pat[p]){
+        while((c = fgetc(file)) == pat[p]){
             ++f, ++p;
             if(p >= p_len){
                 fseek(file, pos, SEEK_SET);
