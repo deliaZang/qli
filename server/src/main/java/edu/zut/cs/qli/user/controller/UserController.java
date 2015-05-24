@@ -9,19 +9,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 
 /**
  * Created by ZL on 2015/4/26.
  */
 @Controller
 @RequestMapping("/user")
-public class UserController extends BaseEntityController<User,Long,UserManager> {
+public class UserController extends BaseEntityController<User, Long, UserManager> {
 
     UserManager userManager;
 
@@ -30,54 +26,45 @@ public class UserController extends BaseEntityController<User,Long,UserManager> 
         this.userManager = userManager;
         this.manager = this.userManager;
     }
+
     @RequestMapping(method = RequestMethod.GET, value = "/login.html")
-    public String login(){
+    public String login() {
         return "user/login";
     }
+
     @RequestMapping(method = RequestMethod.GET, value = "/register.html")
-    public String register(){
+    public String register() {
         return "user/register";
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/login.do")
-    public ModelAndView loginCheck(@RequestParam(value = "userId", required = true) String userId,
-                                   @RequestParam(value = "password", required = true) String password,
-                                   HttpServletRequest request) {
+    @RequestMapping(method = RequestMethod.POST, value = "/login.html")
+    public String loginCheck(@RequestParam String name,
+                             @RequestParam String password,
+                             HttpServletRequest request, Model model) {
         User user = null;
-        user = userManager.findById(Long.parseLong(userId));
-        String msg = null;
+        user = userManager.findByName(name);
         if (user.getPassword().equals(password)) {
             request.getSession().setAttribute("user", user);
-            return new ModelAndView(new RedirectView("article/main.html"));
+            return "user/index";
         } else {
-            ModelAndView mav = new ModelAndView("user/login");
-            mav.setViewName("user/login");
-            mav.addObject("msg", "登录失败，用户名或密码错误");
-            return mav;
+            model.addAttribute("msg", "登录失败，用户名或密码错误");
+            return "user/login";
         }
     }
-    @RequestMapping(value = "/upload")
-    public String upload(){
-        return "user/filet";
+
+    @RequestMapping(method = RequestMethod.POST, value = "/register")
+    public String saveUser(User user) {
+        this.userManager.save(user);
+        return "user/login";
     }
-    @RequestMapping(method = RequestMethod.POST, value = "/upload")
-    public String upload(@RequestParam(value = "file")MultipartFile file, Model model,HttpServletRequest request){
-        String path = request.getSession().getServletContext().getRealPath("upload");
-        String fileName = file.getOriginalFilename();
-        File targetFile = new File(path, fileName);
-        if(!targetFile.exists()){
-            targetFile.mkdirs();
+    @RequestMapping(value = "/exit")
+    public String exit(HttpServletRequest request){
+        User user = (User)request.getSession().getAttribute("user");
+        if(user!=null)
+        {
+            request.getSession().removeAttribute("user");
         }
-
-        //保存
-        try {
-            file.transferTo(targetFile);
-        } catch (Exception e) {
-            model.addAttribute("fileUrl", "上传失败");
-        }
-
-        model.addAttribute("fileUrl", targetFile.getPath());
-        return "user/filet";
+        return "user/index";
     }
 
 }

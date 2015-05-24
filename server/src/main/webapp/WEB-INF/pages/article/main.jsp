@@ -50,20 +50,6 @@
             });
 
         });
-
-        //删除
-        function doDelete(id) {
-            $.ajx({
-                type: "POST",
-                url: basePath+"/article/do.html",
-                success: function (json) {
-                    alert(json);
-                },
-                error: function () {
-                    alert("删除失败");
-                }
-            });
-        }
     </script>
 </head>
 <body>

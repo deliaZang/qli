@@ -16,6 +16,11 @@ public class UserManagerImpl  extends BaseManagerImpl<User, Long> implements Use
     @Autowired
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
+        this.dao = this.userDao;
     }
 
+    @Override
+    public User findByName(String userName) {
+        return this.userDao.findByName(userName);
+    }
 }

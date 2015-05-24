@@ -10,9 +10,9 @@ import javax.persistence.Table;
 @Table(name="t_user")
 public class User extends BaseEntityDomain {
 
-    @Column(name="userId")
-    private String userId;
-    
+    @Column(name="nick")
+    private String nick;
+
     @Column(name="name")
     private String name;
 
@@ -33,5 +33,13 @@ public class User extends BaseEntityDomain {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getNick() {
+        return nick;
+    }
+
+    public void setNick(String nick) {
+        this.nick = nick;
     }
 }

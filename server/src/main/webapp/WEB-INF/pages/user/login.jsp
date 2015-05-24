@@ -43,13 +43,13 @@
     </c:if>
 </div>
 <div class="container" align="center">
-    <form class="form-horizontal well" method="post" action="<%=path%>/user/login.do">
+    <form class="form-horizontal well" method="post" action="<%=path%>/user/login.html">
         <div class="panel panel-primary">
             <div class="panel-heading">用户登录</div>
             <div class="panel-body">
                 <div class="control-group">
                     <label class="control-label" for="userId">用户名</label>
-                    <input type="text" id="userId" class="input" placeholder="用户名" name="userId">
+                    <input type="text" id="userId" class="input" placeholder="用户名" name="name">
                 </div>
                 <div class="control-group">
                     <label class="control-label" for="password">密码&nbsp;&nbsp;</label>

@@ -8,11 +8,16 @@
     <title></title>
     <script type="text/javascript" src="<%=path%>/resources/js/jquery-1.11.2.min.js"></script>
     <script type="text/javascript" src="<%=path%>/resources/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="<%=path%>/resources/js/bootstrap-modal.js"></script>
     <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap.css" rel="stylesheet"/>
     <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap-theme.css" rel="stylesheet"/>
     <script type="text/javascript">
         $(function () {
             //获取评论列表
+            getComment();
+        });
+        //获取评论列表
+        function getComment() {
             $.ajax({
                 type: "GET",
                 url: "<%=path%>/comment/findByArticle.json?id=${article.id}",
@@ -26,17 +31,7 @@
                 }
 
             });
-            $(".glyphicon-pencil").click(
-                    function (event) {
-                        var id = $(this).attr("id");
-                        $("#noteModal").modal({
-                            keyboard: false,
-                            show: true
-                        });
-                    });
-
-        });
-
+        }
         //获取评论数据
         function showComment() {
             $(".comment").show();
@@ -56,32 +51,48 @@
                     if (json == "SUCCESS") {
                         alert("保存成功");
                     }
+                    //刷新评论列表
+                    getComment();
                     $(".comment").hide();
                 }
             });
         }
         //保存笔记
         function saveNote(id) {
+            var title = $("#title").val();
             var note = $("#note").val();
             $.ajax({
                 type: "POST",
                 url: "<%=path%>/note/save.html",
                 data: {
                     id: id,
+                    title:title,
                     content: note
                 },
                 success: function (json) {
                     if (json == "SUCCESS") {
                         alert("保存成功");
                     }
-                    $("#noteModal").on('hidden', function () {
-                        $(this).removeData('modal');
-                    });
-
+/*
+                    $("#myModal").modal('hide');
+*/
+                    $("#title").val("");
+                    $("#content").val("");
                 }
             });
         }
     </script>
+    <style>
+        #modal{
+            position:absolute;
+            left:0px;
+            top:0px;
+            z-index: 100px;
+        }
+        .modal-body{
+            height: 200px;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid">
@@ -108,14 +119,9 @@
         <div class="panel-heading">
             <h3 class="panel-title">
                 课程内容
-                <a class="btn" href="#noteModal" data-toggle="modal">
-                    <i class="glyphicon glyphicon glyphicon-pencil" title="记笔记" style="margin-left: 80%;"
-                       id="${article.id}"></i></a>
-
-                <div class="note" hidden="hidden">
-
-                    <button class="btn btn-primary" onclick="saveNote(${article.id})">保存</button>
-                </div>
+                <a class="btn" href="#myModal" data-toggle="modal"  style="margin-left: 80%;" onclick="showModal()">
+                    <i class="glyphicon glyphicon glyphicon-pencil" title="记笔记" id="${article.id}"></i>
+                </a>
             </h3>
         </div>
         <div class="panel-body">
@@ -138,22 +144,38 @@
         </div>
     </div>
 </div>
-<!-- 记笔记 -->
-<div id="noteModal" class="modal hide fade" tabindex="-1"
-     role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"
-                aria-hidden="true">×
-        </button>
-        <h3 id="myModalLabel">记笔记</h3>
-    </div>
-    <div class="modal-body">
-
-        内容<textarea id="note" name="note" cols="60" rows="5"></textarea>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" aria-hidden="true" onclick="saveNote(${article.id})">保存</button>
-        <button class="btn" data-dismiss="modal" aria-hidden="true">保存</button>
+<!-- 记笔记的模态框 -->
+<div id="modal">
+    <div class="modal fade" id="myModal" tabindex="-1" data-backdrop="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">记笔记</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="title" class="col-sm-2 control-label">标题</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="title">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="note" class="col-sm-2 control-label">内容</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" rows="6" id="note"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="saveNote(${article.id})">保存</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 </body>

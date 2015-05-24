@@ -1,5 +1,6 @@
 <%@ page import="edu.zut.cs.qli.user.domain.User" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
     String path = request.getContextPath();
     User user = (User) request.getSession().getAttribute("user");
 %>
@@ -8,10 +9,10 @@
 <head>
     <title></title>
     <script type="text/javascript" src="<%=path%>/resources/js/jquery-1.11.2.min.js"></script>
-    <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap.css"  rel="stylesheet"/>
-    <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap-theme.css"  rel="stylesheet"/>
+    <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap.css" rel="stylesheet"/>
+    <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap-theme.css" rel="stylesheet"/>
     <script type="text/javascript" src="<%=path%>/resources/js/SimpleTree1.3/js/SimpleTree.js"></script>
-    <link href="<%= path%>/resources/style/tree_themes/SimpleTree.css" rel="stylesheet" type="text/css" >
+    <link href="<%= path%>/resources/style/tree_themes/SimpleTree.css" rel="stylesheet" type="text/css">
     <script type="text/javascript">
         var localObj = window.location;
         var contextPath = localObj.pathname.split("/")[1];
@@ -24,7 +25,7 @@
 <body style="width: 80%;margin-left: 10%;margin-right: 10%;">
 
 <div class="container-fluid">
-    <div class="row-fluid"  id="header">
+    <div class="row-fluid" id="header">
         <div class="span12">
             <div class="navbar">
                 <div class="navbar-inner">
@@ -38,10 +39,10 @@
                             <li><a href="<%=path%>/comment/list.html" target="mainView">评论</a></li>
                             <li><a href="<%=path%>/note/list.html" target="mainView">笔记</a></li>
                             <% if (null == user) {%>
-                            <li><a href="<%=path%>/user/login.html" class="colblue">登录</a> </li>
+                            <li><a href="<%=path%>/user/login.html" class="colblue">登录</a></li>
                             <li><a href="<%=path%>/user/register.html" class="colf1">注册</a></li>
-                            <%}else{%>
-                            <li><a>您好，${user.nick}</a> <li>
+                            <%} else {%>
+                            <li><a>您好，${user.nick}</a>
                             <li><a href="<%=path%>/user/exit.html" class="colf1">退出</a></li>
                             <%}%>
                             <li class="dropdown pull-right">

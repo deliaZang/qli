@@ -28,4 +28,14 @@ public class CommentManagerImpl extends BaseManagerImpl<Comment, Long> implement
     public List<Comment> findByArticle(long id) {
         return this.commentDao.findByArticle(id);
     }
+
+    /**
+     * 根据用户查询
+     * @param id
+     * @return
+     */
+    @Override
+    public List<Comment> findByUser(long id) {
+        return this.commentDao.findByUser(id);
+    }
 }

@@ -9,28 +9,17 @@
     <title>用户注册</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <script type="text/javascript">
-        var localObj = window.location;
-        var contextPath = localObj.pathname.split("/")[1];
-        var basePath = localObj.protocol + "//" + localObj.host + "/";
-    </script>
-    <script type="text/javascript" src="<%=path%>/resources/js/jquery-2.0.3.js"></script>
-    <link href="<%=path%>/resources/style/bootstrap-3.1.1/dist/css/bootstrap.min.css"
-          rel="stylesheet" type="text/css"/>
-    <link
-            href="<%=path%>/resources/style/bootstrap-3.1.1/dist/css/bootstrap-theme.css"
-            rel="stylesheet" type="text/css"/>
+    var localObj = window.location;
+    var contextPath = localObj.pathname.split("/")[1];
+    var basePath = localObj.protocol + "//" + localObj.host + "/";
+</script>
+    <script type="text/javascript" src="<%=path%>/resources/js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="<%=path%>/resources/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="<%=path%>/resources/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="<%=path%>/resources/js/messages_zh.js"></script>
+    <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap.css"  rel="stylesheet"/>
+    <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap-theme.css"  rel="stylesheet"/>
 
-    <script type="text/javascript"
-            src="<%=path%>/resources/js/jquery-validation-1.12.0/dist/jquery.validate.js"></script>
-    <script type="text/javascript"
-            src="<%=path%>/resources/js/jquery-validation-1.12.0/src/localization/messages_zh.js"></script>
-    <link href="<%=path%>/resources/style/bootstrap-3.1.1/dist/css/bootstrap-datetimepicker.css" rel="stylesheet"
-          type="text/css"/>
-
-    <script type="text/javascript"
-            src="<%=path%>/resources/style/bootstrap-3.1.1/dist/js/bootstrap-datetimepicker.js"></script>
-    <script type="text/javascript"
-            src="<%=path%>/resources/style/bootstrap-3.1.1/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
     <script type="text/javascript">
         $(function () {
             $("#register").validate({
@@ -51,35 +40,6 @@
                     $("#confirmPassword").focus();
                 }
             });
-            $("#submitBtn").click(
-
-                    function () {
-                        var name = $('#name').val();
-                        var nickname = $('#nick').val();
-                        var birthday = $('#birthday').val();
-                        var password = $('#password').val();
-                        var params = {
-                            name: name,
-                            nickname: nickname,
-                            birthday: birthday,
-                            password: password
-                        };
-                        $.ajax({
-                            type: "post",
-                            contentType: 'application/json;charset=utf-8',
-                            data: JSON.stringify(params),
-                            dataType: "json",
-                            url: basePath + "user/0.json",
-                            success: function (msg) {
-                                alert("注册成功,请记住你的ID:" + msg.id);
-                                window.location.href = basePath + "user/login.html";
-                            },
-                            error: function (msg) {
-                                alert("注册失败");
-                                alert(msg);
-                            }
-                        });
-                    });
         });
     </script>
     <style type="text/css">
@@ -100,14 +60,14 @@
             padding: 10px;
         }
         .right{
-            width: 120px;
+            width: 130px;
             height: 50px;
         }
     </style>
 </head>
 <body>
 <div class="container" align="center">
-    <form class="form-horizontal well" id="register" method="post">
+    <form class="form-horizontal well" id="register" method="post" action="<%=path%>/user/register.html">
         <div class="panel panel-primary">
             <div class="panel-heading">用户注册</div>
 
@@ -127,19 +87,6 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="left"><label class="control-label" for="birthday" id="birthdayLabel">生日</label>
-                        </td>
-                        <td class="right">
-                            <div class="controls input-append date form_datetime"
-                                 data-date-format="yyyy-MM-dd" data-link-field="dtp_input1">
-                                <input size="16" type="text" value="" class="input" id="birthday" name="birthday"
-                                       readonly> <span
-                                    class="add-on"><i class="icon-remove"></i></span> <span
-                                    class="add-on"><i class="icon-th"></i></span>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
                         <td class="left"><label class="control-label" for="password" id="passwordLabel">密码</label>
                         </td>
                         <td class="right"><input type="password" class="input" placeholder="密码" id="password" name="password">
@@ -149,8 +96,7 @@
                     <tr>
                         <td class="left"><label class="control-label" for="confirmPassword" id="confirmPasswordLabel">确认密码</label>
                         </td>
-                        <td class="right"><input type="password" class="input" placeholder="确认密码" id="confirmPassword"
-                                                 name="confirmPassword">
+                        <td class="right"><input type="password" class="input" placeholder="确认密码" id="confirmPassword">
                             <font color="red">*</font><br>
                             <span></span></td>
                     </tr>
@@ -159,7 +105,7 @@
             <div class="panel-footer">
                 <div class="form-actions">
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary" id="submitBtn">提交</button>
+                        <button type="submit" class="btn btn-primary">提交</button>
                         <button class="btn" type="reset">重置</button>
                     </div>
                 </div>
@@ -168,21 +114,5 @@
 
     </form>
 </div>
-
-<script type="application/javascript">
-    $(function () {
-        $('.form_datetime').datetimepicker({
-            language: 'zh-CN',
-            weekStart: 1,
-            todayBtn: 1,
-            autoclose: 1,
-            todayHighlight: 1,
-            startView: 2,
-            forceParse: 0,
-            showMeridian: 1
-        });
-    });
-
-</script>
 </body>
 </html>

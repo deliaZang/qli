@@ -15,4 +15,11 @@ public interface NoteManager extends BaseManager<Note, Long> {
      * @return
      */
     public List<Note> findByArticle(long id);
+
+    /**
+     * 根据用户查询
+     * @param id
+     * @return
+     */
+    public List<Note> findByUser(long id);
 }

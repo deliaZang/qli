@@ -34,4 +34,9 @@ public class NoteManagerImpl extends BaseManagerImpl<Note, Long>
     public List<Note> findByArticle(long id) {
         return this.noteDao.findByArticle(id);
     }
+
+    @Override
+    public List<Note> findByUser(long id) {
+        return this.noteDao.findByUser(id);
+    }
 }

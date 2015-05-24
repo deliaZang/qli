@@ -18,4 +18,12 @@ public interface CommentDao extends BaseDao<Comment, Long> {
      */
     @Query(value = "select c from Comment c where c.article.id = :id")
     public List<Comment> findByArticle(@Param("id")long id);
+
+    /**
+     * 根据用户查询
+     * @param id
+     * @return
+     */
+    @Query(value = "select c from Comment c where c.user.id = :id")
+    public List<Comment> findByUser(@Param("id")long id);
 }

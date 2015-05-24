@@ -18,4 +18,7 @@ public interface NoteDao extends BaseDao<Note, Long> {
      */
     @Query(value = "select n from Note n where n.article.id = :id")
     public List<Note> findByArticle(@Param("id")long id);
+
+    @Query(value = "select n from Note n where n.user.id = :id")
+    public List<Note> findByUser(@Param("id")long id);
 }
