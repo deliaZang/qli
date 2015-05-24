@@ -1,38 +1,38 @@
 #include "qli.h"
 
-char http_head[] = "GET /article/list.html HTTP/1.0\nHost:127.0.0.1:8080\n\n";
-
 int
 main(int argc, char *argv[])
 {
     setlocale(LC_ALL, "");
+    initscr();
+    cbreak();
+    noecho();
 
     int sockfd, n;
-    char recivline[MAXLINE];
-    if(2 == argc){
-        sockfd = tcp_connect(argv[1], "80");
-    }else if(3 == argc){
+    char buffer[MAXLINE];
+    if(4 == argc){
         sockfd = tcp_connect(argv[1], argv[2]);
     }else{
-        err_quit("Usage: %s [addr] [post]\n", argv[0]);
+        err_quit("Usage: %s [addr] [post] [path]\n", argv[0]);
     }
 
-    Write(sockfd, http_head, strlen(http_head));
+    sprintf(buffer, "GET %s HTTP/1.0\n\n", argv[3]);
+    Write(sockfd, buffer, strlen(buffer));
 
 #ifdef _MY_DEBUG
-    while(0 != (n = Read(sockfd, recivline, MAXLINE))){
-        Write(STDOUT_FILENO, recivline, n);
+    while(0 != (n = Read(sockfd, buffer, MAXLINE))){
+        Write(STDOUT_FILENO, buffer, n);
     }
 #else
     FILE *temp, *file = fdopen(sockfd, "r");
-    while(EOF != read_line(file, recivline, MAXLINE)){
-        if(0 == strcmp("\r", recivline)){
+    while(EOF != read_line(file, buffer, MAXLINE)){
+        if(0 == strcmp("\r", buffer)){
             break;
         }
     }
-    temp = fopen("abc.txt", "w+");
-    while(0 != (n = Read(sockfd, recivline, MAXLINE))){
-        Write(fileno(temp), recivline, n);
+    temp = tmpfile();
+    while(0 != (n = Read(sockfd, buffer, MAXLINE))){
+        Write(fileno(temp), buffer, n);
     }
     close(sockfd);
 
@@ -41,5 +41,6 @@ main(int argc, char *argv[])
     distroy_tab(tab);
     Fclose(temp);
 #endif
+    endwin();
     exit(0);
 }

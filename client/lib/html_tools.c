@@ -354,3 +354,12 @@ distroy_tab(struct tab *tab){
     distroy_html(tab->root);
     free(tab);
 }
+
+struct link*
+new_link(int row, int col, struct html *item){
+    struct link *l = Calloc(1, sizeof(struct link));
+    l->row = row;
+    l->col = col;
+    l->item = item;
+    return l;
+}

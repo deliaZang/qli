@@ -141,9 +141,9 @@ sunday(FILE *file, const char *pat){
         }
 
         if((idx = index_of(pat, file_pos_char(file, f-p+p_len))) < 0){
-            f = f-p+p_len+1;
+            f = ftell(file)-p+p_len+1;
         }else{
-            f = f-p+p_len-idx;
+            f = ftell(file)-p+p_len-idx-1;
         }
         fseek(file, f, SEEK_SET);
         p = 0;

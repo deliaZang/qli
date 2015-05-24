@@ -3,6 +3,7 @@
 #define max_row(tab) ((tab)->disp_info.max_row)
 #define max_col(tab) ((tab)->disp_info.max_col)
 #define win_tab(tab) ((tab)->disp_info.win)
+#define links(tab) ((tab)->links)
 #define MAX_PAGE_LINES 1000
 
 #ifdef _MY_DEBUG
@@ -52,33 +53,35 @@ display_tab(struct tab *tab){
 
 #else
 
+// FIXME 需要将tab做成链表
 static void
-display_html(const struct DLlist *root){
-    if(NULL == root) return;
-    struct html *h;
-    const struct DLlist *temp = root;
-    do{
-        temp = temp->next;
-        h = DLlist_getdata(temp);
-        before(h);
-        dothis(h);
-        display_html(h->child);
-        after(h);
-    }while(temp != root);
+do_new_tab(struct html *link){
+    int sockfd, n;
+    char buffer[MAXLINE];
+    sockfd = tcp_connect("localhost", "8080");
+
+    sprintf(buffer, "GET %s HTTP/1.0\n\n", (char *)link->data);
+    Write(sockfd, buffer, strlen(buffer));
+    FILE *temp, *file = fdopen(sockfd, "r");
+    while(EOF != read_line(file, buffer, MAXLINE)){
+        if(0 == strcmp("\r", buffer)){
+            break;
+        }
+    }
+    temp = tmpfile();
+    while(0 != (n = Read(sockfd, buffer, MAXLINE))){
+        Write(fileno(temp), buffer, n);
+    }
+    close(sockfd);
+
+    struct tab *tab = init_tab(temp);
+    display_tab(tab);
+    distroy_tab(tab);
+    Fclose(temp);
 }
 
-void
-display_tab(struct tab *tab){
-    initscr();
-    cbreak();
-    noecho();
-
-    getmaxyx(stdscr, max_row(tab), max_col(tab));
-    win_tab(tab) = newpad(MAX_PAGE_LINES, max_col(tab));
-    keypad(win_tab(tab), TRUE);
-
-    display_html(tab->root);
-
+static void
+deal_key_press(struct tab *tab){
     int ch;
     int start_line = 0;
     wmove(win_tab(tab), 0, 0);
@@ -115,6 +118,21 @@ display_tab(struct tab *tab){
                     ++x;
                 }
                 break;
+            case '\n':
+                // FIXME
+                if(NULL == links(tab)) break;
+                const struct DLlist *start = links(tab);
+                struct link *link;
+                do{
+                    link = DLlist_getdata(links(tab));
+                    if(y == link->row){
+                        //mvwprintw(win_tab(tab), start_line+2, 0, "%s", (char *)link->item->data);
+                        do_new_tab(link->item);
+                        break;
+                    }
+                    links(tab) = links(tab)->next;
+                }while(start != links(tab));
+                break;
             default:
                 break;
         }
@@ -123,9 +141,32 @@ display_tab(struct tab *tab){
         clear();
         prefresh(win_tab(tab), start_line, 0, 0, 0, max_row(tab)-1, max_col(tab)-1);
     }
+}
 
+static void
+display_html(const struct DLlist *root){
+    if(NULL == root) return;
+    struct html *h;
+    const struct DLlist *temp = root;
+    do{
+        temp = temp->next;
+        h = DLlist_getdata(temp);
+        before(h);
+        dothis(h);
+        display_html(h->child);
+        after(h);
+    }while(temp != root);
+}
+
+void
+display_tab(struct tab *tab){
+    getmaxyx(stdscr, max_row(tab), max_col(tab));
+    win_tab(tab) = newpad(MAX_PAGE_LINES, max_col(tab));
+    keypad(win_tab(tab), TRUE);
+
+    display_html(tab->root);
+    deal_key_press(tab);
     delwin(win_tab(tab));
-    endwin();
 }
 
 #endif
@@ -176,7 +217,7 @@ static void
 dothis_a(struct html *cur){
     int y, x;
     getyx(win_tab(cur_tab), y, x);
-    wprintw(win_tab(cur_tab), "{%d, %d}", y, x);
+    links(cur_tab) = DLlist_insert(links(cur_tab), new_link(y, x, cur));
 }
 static void
 after_a(struct html *cur){

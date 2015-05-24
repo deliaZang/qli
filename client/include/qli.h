@@ -196,13 +196,15 @@ struct html{
 };
 
 struct link{
+    int row, col;
     struct html *item;
 };
 
 struct tab{
-    struct DLlist *root;
     FILE *file;
     struct display disp_info;
+    struct DLlist *root;
+    struct DLlist *links;
 };
 extern struct tab *cur_tab;
 
@@ -212,6 +214,8 @@ extern struct tab *cur_tab;
 
 extern const char *html_tag[HTML_TAGS];
 
+struct link*
+new_link(int row, int col, struct html *item);
 struct tab*
 init_tab(FILE *file);
 void
