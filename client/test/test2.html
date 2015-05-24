@@ -1,0 +1,1248 @@
+
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>curses - DarkSun的笔记</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="DarkSun" />
+    <link rel="stylesheet" href="/media/css/main.css" type="text/css">
+    <link rel="stylesheet" href="/media/css/prettify.css" type="text/css">
+  </head>
+  <body class="container">
+    <div>
+      <header class="masthead">
+        <h1 class="masthead-title"><a href="/">DarkSun的笔记</a></h1>
+        <p>==============&gt; 随便玩玩,随便看看</p>
+        <ul>
+          <li><a href="/programming/">Programming</a></li>
+          <li><a href="/reading/">Reading</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/emacs/">Emacs</a></li>
+          <li><a href="/linux/">Linux</a></li>
+          <li><a href="/tags/">Tags</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="https://github.com/lujun9972">GitHub</a></li>
+          <li><a href="/rss.xml">RSS</a></li>
+        </ul>
+        <form method="get" id="searchform" action="http://www.google.com/search">
+          <input type="text" class="field" name="q" id="s" placeholder="Search">
+          <input type="hidden" name="q" value="site:lujun9972.github.io">
+        </form>
+      </header>
+    </div>
+
+<div>
+<div class="post">
+<h1>curses</h1>
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">curses开发包初接触</h2>
+<div class="outline-text-2" id="text-1">
+</div><div id="outline-container-sec-1-1" class="outline-3">
+<h3 id="sec-1-1">curses包内容</h3>
+<div class="outline-text-3" id="text-1-1">
+<ul class="org-ul">
+<li>curses.h
+主要控制屏幕的输入和输出,光标的操作,窗口的创建和操作等
+</li>
+<li>panel.h
+类似窗口堆栈,不同窗口可以存放其中,并且可以在其中进行移动
+</li>
+<li>menu.h
+主要包括创建菜单并且与之交互的函数,主要用来接受用户的选择
+</li>
+<li>form
+包括创建表单以及与之交互的函数,主要用来接受用户数据输入
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-1-2" class="outline-3">
+<h3 id="sec-1-2">开始使用curses包</h3>
+<div class="outline-text-3" id="text-1-2">
+</div><div id="outline-container-sec-1-2-1" class="outline-4">
+<h4 id="sec-1-2-1">curses初始化</h4>
+<div class="outline-text-4" id="text-1-2-1">
+<ul class="org-ul">
+<li>一般情况下在其余的cuses函数被调用前就必须先调用initscr().
+</li>
+<li>stdscr和curscr的不同在于
+<ul class="org-ul">
+<li>stdscr代表的是逻辑屏幕
+</li>
+<li>curscr代表的是物理屏幕
+</li>
+<li>wfresh函数会根据stdscr和curscr之间的差异更新物理屏幕
+</li>
+</ul>
+</li>
+<li>如果程序使用多个终端
+<ul class="org-ul">
+<li>使用newterm()代替initscr()
+</li>
+<li>对于每个希望与之交互的终端都调用一次newterm()
+</li>
+<li>newterm()返回一个SCREEN结构用来引用某个终端
+</li>
+<li>在需要从某个终端接受输入和输出的时候,必须通过set_term(SCREEN)来将它设置成当前终端
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-1-2-2" class="outline-4">
+<h4 id="sec-1-2-2">终端模式设置</h4>
+<div class="outline-text-4" id="text-1-2-2">
+<ul class="org-ul">
+<li>终端模式实际上是一系列开关的属性,它们直接影响着终端如何处理输入以及输出.
+</li>
+<li>keypad(stdscr,TRUE)
+用来控制是否将键盘上的特殊字符转换成curses包中的对应特殊键
+</li>
+<li>nonl()
+用来控制程序将回车键不要转换成换行符
+</li>
+<li>cbreak()
+读取除了DELETE或CTRL等特殊字符以外的所有字符,其他所有的字符都被立即读取出来
+</li>
+<li>noecho()
+使键盘输入的字符不需要直接在屏幕上显示
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-1-2-3" class="outline-4">
+<h4 id="sec-1-2-3">颜色处理</h4>
+<div class="outline-text-4" id="text-1-2-3">
+<ul class="org-ul">
+<li>使用函数has_colors()判断终端是否支持彩色
+</li>
+<li>使用init_pair(0,COLOR_GREEN,COLOR_BLACK)初始化颜色配对表,设置字符的前景色和背景色
+</li>
+<li>使用attron(A_BLINK|COLOR_PAIR(2))设置要显示的字符如何显示
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-1-2-4" class="outline-4">
+<h4 id="sec-1-2-4">使用refresh和wrefresh进行屏幕更新</h4>
+<div class="outline-text-4" id="text-1-2-4">
+<ul class="org-ul">
+<li>refresh其实是wrefresh(stdscr)的宏定义
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-1-2-5" class="outline-4">
+<h4 id="sec-1-2-5">使用endwin()函数中断curses程序</h4>
+<div class="outline-text-4" id="text-1-2-5">
+<ul class="org-ul">
+<li>endwin()是程序最后调用的一个函数,与initscr()相呼应
+</li>
+<li>endwin()执行后,光标移动到屏幕的左下方
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-1-3" class="outline-3">
+<h3 id="sec-1-3">编译</h3>
+<div class="outline-text-3" id="text-1-3">
+<ul class="org-ul">
+<li>如果程序使用了panel,menu,form等库,-lcurses选项必须在其余的选项之后
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-1-4" class="outline-3">
+<h3 id="sec-1-4">例子</h3>
+<div class="outline-text-3" id="text-1-4">
+<div class="org-src-container">
+
+<pre class="src src-c">#include &lt;curses.h&gt;
+static void finish(int sig);
+int main()
+{
+    initscr();
+    keypad(stdscr,TRUE);
+    nonl();
+    cbreak();
+    noecho();
+    if(has_colors())
+    {
+        start_color();
+        init_pair(0,COLOR_BLACK,COLOR_BLACK);
+        init_pair(1,COLOR_GREEN,COLOR_BLACK);
+        init_pair(2,COLOR_RED,COLOR_BLACK);
+        init_pair(3,COLOR_CYAN,COLOR_BLACK);
+        init_pair(4,COLOR_WHITE,COLOR_BLACK);
+        init_pair(5,COLOR_MAGENTA,COLOR_BLACK);
+        init_pair(6,COLOR_BLUE,COLOR_BLACK);
+        init_pair(7,COLOR_YELLOW,COLOR_BLACK);
+    }
+    attron(A_BLINK|COLOR_PAIR(2));
+    move(LINES/2+1,COLS-4);
+    addstr("Eye");
+    refresh();
+    sleep(2);
+
+    move(LINES/2-3,COLS/2-3);
+    addstr("Bulls");
+    refresh();
+    sleep(2);
+
+    finish(0);
+}
+
+static void finish(int sig)
+{
+    endwin();
+    exit(0);
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2">curses库IO处理</h2>
+<div class="outline-text-2" id="text-2">
+</div><div id="outline-container-sec-2-1" class="outline-3">
+<h3 id="sec-2-1">curses的说明</h3>
+<div class="outline-text-3" id="text-2-1">
+</div><div id="outline-container-sec-2-1-1" class="outline-4">
+<h4 id="sec-2-1-1">curses中的常量定义</h4>
+<div class="outline-text-4" id="text-2-1-1">
+<ul class="org-ul">
+<li>OK 
+curses库函数运行成功的返回值,系统定义为0
+</li>
+<li>ERR
+curses库函数运行发生错误的返回值,系统定义为-1
+</li>
+<li>TRUE
+布尔值,表示真,系统定义为1
+</li>
+<li>FALSE
+布尔值,表示假,系统定义为0
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-2-1-2" class="outline-4">
+<h4 id="sec-2-1-2">curses函数命名规范</h4>
+<div class="outline-text-4" id="text-2-1-2">
+<ul class="org-ul">
+<li>函数默认直接作用于stdscr上
+</li>
+<li>如果某函数是操作对象是指定的窗口而不是stdscr,那么这些函数都带有w作为前置,同时它的地一个函数是一个WINDOW结构的窗口指针
+</li>
+<li>如果某函数是移动操作和输入/输出操作结合的,这些函数在名称前面加上mv,同时移动的坐标(y,x)作为第一二个函数
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-2-1-3" class="outline-4">
+<h4 id="sec-2-1-3">curses参数规范</h4>
+<div class="outline-text-4" id="text-2-1-3">
+<ul class="org-ul">
+<li>对于set函数来说,一般对被作用对象的参数赋值为NULL时,表示的意思是对该类对象设置默认属性
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-2-2" class="outline-3">
+<h3 id="sec-2-2">终端模式设置</h3>
+<div class="outline-text-3" id="text-2-2">
+</div><div id="outline-container-sec-2-2-1" class="outline-4">
+<h4 id="sec-2-2-1">ECHO模式</h4>
+<div class="outline-text-4" id="text-2-2-1">
+<ul class="org-ul">
+<li>函数
+int echo() / int noecho()
+</li>
+<li>说明
+<ol class="org-ol">
+<li>ECHO模式即回显模式,ECHO模式用来决定用户的输入是否立即回显
+</li>
+</ol>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-2-2-2" class="outline-4">
+<h4 id="sec-2-2-2">CBREAK模式</h4>
+<div class="outline-text-4" id="text-2-2-2">
+<ul class="org-ul">
+<li>函数
+int cbreak() / int nocbreak()
+</li>
+<li>说明
+<ol class="org-ol">
+<li>CBREAK模式也被成为立即输入模式,在此模式下,除了DELETE或者CTRL等仍然被视为特殊控制字符外,所有的输入字符都被一一立即读取出来.
+</li>
+<li>默认情况下CBREAK模式是打开的
+</li>
+<li>在旧版本的curses中,必须使用crmode()和nocrmode()取代cbreak()和nocbreak()
+</li>
+</ol>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-2-2-3" class="outline-4">
+<h4 id="sec-2-2-3">NEWLINE模式</h4>
+<div class="outline-text-4" id="text-2-2-3">
+<ul class="org-ul">
+<li>函数
+int nl() / int nonl()
+</li>
+<li>说明
+NEWLINE模式决定输入时回车是否为\r\n.输入时\r\n是否和起来作为一个回车键
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-2-2-4" class="outline-4">
+<h4 id="sec-2-2-4">功能键模式</h4>
+<div class="outline-text-4" id="text-2-2-4">
+<ul class="org-ul">
+<li>函数
+int keypad(WINDOW *win,int flag)
+<ul class="org-ul">
+<li>参数说明
+<ol class="org-ol">
+<li>win指向需要设置功能键模式的窗口
+</li>
+<li>flag为TRUE/FALSE用来指定模式的开启或关闭
+</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>说明
+<ol class="org-ol">
+<li>一般情况下,方向键与功能键这些特殊字符是无法被wgetch()之类的函数读取出来的.开启功能键模式之后,特殊字符会被转化为curses.h内部定义的一些特殊键.
+</li>
+<li>curses.h内部定义的特殊键一般以KEY_开头,列表如下
+<ul class="org-ul">
+<li>KEY_MIN         curses中定义的最小的键值
+</li>
+<li>KEY_BREAK       break按键
+</li>
+<li>KEY_DOWN        方向键下
+</li>
+<li>KEY_UP          方向键上
+</li>
+<li>KEY_LEFT        方向键左
+</li>
+<li>KEY_RIGHT       方向键右
+</li>
+<li>KEY_HOME        home键
+</li>
+<li>KEY_BACKSPACE   退格键
+</li>
+<li>KEY_F0          功能键F0
+</li>
+<li>KEY_F(n)        功能键Fn
+</li>
+<li>KEY_DL          行删除键
+</li>
+<li>KEY_IL          行插入建
+</li>
+<li>KEY_DC          字符删除键
+</li>
+<li>KEY_IC          字符插入键
+</li>
+<li>KEY_NPAGE       下一页
+</li>
+<li>KEY_PPAGE       上一页
+</li>
+<li>KEY_END         end键
+</li>
+<li>KEY_MAX         curses定义的最大键值
+</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-2-2-5" class="outline-4">
+<h4 id="sec-2-2-5">RAW模式</h4>
+<div class="outline-text-4" id="text-2-2-5">
+<ul class="org-ul">
+<li>函数
+int raw() / int noraw()
+</li>
+<li>说明
+<ul class="org-ul">
+<li>用户的输入会立即被接受,同时任何特殊字符将不再起作用,取而代之的是产生一个相应的信号
+</li>
+<li>如果同时设置CBREAK和RAW模式,仅有RAW模式其作用
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-2-2-6" class="outline-4">
+<h4 id="sec-2-2-6">延迟模式</h4>
+<div class="outline-text-4" id="text-2-2-6">
+<ul class="org-ul">
+<li>函数
+int halfdelay(int tenth)
+<ul class="org-ul">
+<li>参数说明
+<ol class="org-ol">
+<li>tenth指定半延时的时间间隔,单位是10ms
+</li>
+</ol>
+</li>
+</ul>
+<p>
+int nodelay(WINDOW *win,bool bf)
+</p>
+<ul class="org-ul">
+<li>参数说明
+<ol class="org-ol">
+<li>win指向需要设置无延迟模式窗口的指针,bf决定开启或关闭该模式
+</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>说明
+<ul class="org-ul">
+<li>半延迟模式与cbrak模式非常类似,所有用户输如立即被接受,但不同点在于如果一段时间内用户没有输入,则输入函数立即返回ERR
+</li>
+<li>使用nocbreak()函数可以取消终端的半延时模式
+</li>
+<li>无延迟模式主要用来控制终端的字符输入. 它使得终端输入函数由阻塞调用变成非阻塞调用
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-2-3" class="outline-3">
+<h3 id="sec-2-3">输入/输出函数</h3>
+<div class="outline-text-3" id="text-2-3">
+</div><div id="outline-container-sec-2-3-1" class="outline-4">
+<h4 id="sec-2-3-1">字符,字符串输出</h4>
+<div class="outline-text-4" id="text-2-3-1">
+<div class="org-src-container">
+
+<pre class="src src-c">/**
+@brief 在光标位置输出字符,但不自动刷新
+@param ch 需要输出的字符
+@return OK 成功
+@return ERR 失败 
+@note chtype为无符号长整型,它的低位可以包含字符本身的信息,这部分与char类型类似
+@note curses中定义了一些常量与之队列,这些常量以ACS_开始:ACS_ULCORNER,ACS_LLCORNER,ACS_URCORNER,ACS_LRCORNER,ACS_RTEE,ACS_BTEE,ACS_HLINE,ACS_VLINE,ACS_PLUS,ACS_S1,ACS_S9,ACS_DIAMOND,ACS_CKBOARD,ACS_DEGREE,ACS_PLMINUS,ACS_BULLET,ACS_LARROW,ACS_RARROW,ACS_UARROW,ACS_DAROW,ACS_BOARD,ACS_LANTERN,ACS_BLOCK
+@see waddch(),mvaddch(),mvwaddch()
+ */    
+int addch(chtype ch);
+
+/**
+@brief 输出字符,并自动刷新
+@note 跟addch类型,但是会自动刷新窗口
+ */
+int echochar(chtype ch);
+
+/**
+@brief 输出字符串str
+@note 如果字符串的长度超过了屏幕的大小,字符串将截取掉
+@see waddstr(),mvwaddstr(),mvaddstr()
+ */
+int addstr(char* str);
+
+/**
+@brief 在屏幕上格式化输出一个或者多个值
+ */
+int printw(char* fmt,arg1,arg2...);
+
+/**
+@brief 在当前位置插入一个字符
+@note 字符插入后,光标将自动的向右i移动一个位置,如果最右边的字符超过终端屏幕的范围,它将被截取掉
+@see mvprintw(),mvwprintw(),wprintw()
+ */
+int insch(chtype ch);
+
+/**
+@brief 删除当前光标处字符的函数
+ */
+int delch();
+
+/**
+@brief 在屏幕上插入一空白行
+ */
+int insertln();
+
+/**
+@brief 删除当前行,并且将当前行下的所有行往上移动一行,最后一行则用空格代替
+ */
+int deleteln();
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-2-3-2" class="outline-4">
+<h4 id="sec-2-3-2">字符,字符串输入</h4>
+<div class="outline-text-4" id="text-2-3-2">
+<div class="org-src-container">
+
+<pre class="src src-c">/**
+@brief 从终端键盘读取一个字符,并返回字符的整数值
+@return 如果成功,则返回读入的字符整数值
+@return 如果失败,返回ERR
+ */
+int getch();
+
+/**
+@brief 从终端键盘接受字符串,并且存储在str中
+@param str 指向存储字符串的位置
+@note 当字符串被存储时,'\n'被空格所代替
+ */
+int getstr(char* str);
+
+/**
+@brief 格式化输入数据,并把他们复制到指定的位置
+ */
+int scanw(char* fmt,argptr1,argptr2...);
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-2-4" class="outline-3">
+<h3 id="sec-2-4">字符属性函数</h3>
+<div class="outline-text-3" id="text-2-4">
+</div><div id="outline-container-sec-2-4-1" class="outline-4">
+<h4 id="sec-2-4-1">chtype说明</h4>
+<div class="outline-text-4" id="text-2-4-1">
+<ul class="org-ul">
+<li>chtype类型包含两部分信息:一部分包含字符本身的信息,另一部分包含与字符相关的一些属性信息,这些属性允许字符用不同的方式显示,包括反显,加粗,变色,下划线等
+</li>
+<li>当字符作为参数传递给函数的时候可以将这些属性直接用|与字符结合,多个属性直接也可以用|来对属性进行组合
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-2-4-2" class="outline-4">
+<h4 id="sec-2-4-2">字符属性列表</h4>
+<div class="outline-text-4" id="text-2-4-2">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+
+<col  class="left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="left">属性值</th>
+<th scope="col" class="left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="left">A_NORMAL</td>
+<td class="left">标准的显示模式</td>
+</tr>
+
+<tr>
+<td class="left">A_BLANK</td>
+<td class="left">闪烁</td>
+</tr>
+
+<tr>
+<td class="left">A_BOLD</td>
+<td class="left">加粗</td>
+</tr>
+
+<tr>
+<td class="left">A_DIM</td>
+<td class="left">半透明</td>
+</tr>
+
+<tr>
+<td class="left">A_REVERSE</td>
+<td class="left">反显</td>
+</tr>
+
+<tr>
+<td class="left">A_STANDOUT</td>
+<td class="left">高亮</td>
+</tr>
+
+<tr>
+<td class="left">A_UNDERLINE</td>
+<td class="left">下划线</td>
+</tr>
+
+<tr>
+<td class="left">A_ALTCHARSET</td>
+<td class="left">可替代字符集</td>
+</tr>
+
+<tr>
+<td class="left">COLOR_PAIR(n)</td>
+<td class="left">设置字符的背景色和前景色</td>
+</tr>
+
+<tr>
+<td class="left">A_CHARTEXT</td>
+<td class="left">与chtype类型用&amp;操做符可以提取字符值</td>
+</tr>
+
+<tr>
+<td class="left">A_ATTRIBUTES</td>
+<td class="left">与chtype类型用&amp;操作符可以提取属性值</td>
+</tr>
+
+<tr>
+<td class="left">A_COLOR</td>
+<td class="left">与chtype类型用&amp;操作符号可以提取颜色信息</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-sec-2-4-3" class="outline-4">
+<h4 id="sec-2-4-3">设置/取消字符属性</h4>
+<div class="outline-text-4" id="text-2-4-3">
+<div class="org-src-container">
+
+<pre class="src src-c">/**
+@brief 设置字符输出的默认字符属性,设置之后所有的文本字符都受该属性的影响
+@note 可以用过attrset(0)的特殊用法来关闭所有属性
+ */
+int attrset(chtype attrs);
+
+/**
+@brief 打开某些属性
+ */
+int attron(chtype attrs);
+
+/**
+@brief 关闭某些属性
+ */
+int attroff(chtype attrs);
+
+/**
+@brief 在当前屏幕打开高亮显示属性A_STANDOUT
+ */
+int standout();
+
+/**
+@brief 作用与attrset(0)作用相同,关闭所有属性
+ */
+int standend();
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-2-5" class="outline-3">
+<h3 id="sec-2-5">光标操作</h3>
+<div class="outline-text-3" id="text-2-5">
+</div><div id="outline-container-sec-2-5-1" class="outline-4">
+<h4 id="sec-2-5-1">光标说明</h4>
+<div class="outline-text-4" id="text-2-5-1">
+<ul class="org-ul">
+<li>curses库中光标分为物理光标和逻辑光标.物理光标只有一个,而逻辑光标属于curses窗口,每个窗口只有一个物理光标但却可能有多个逻辑光标
+</li>
+<li>物理光标位置会在处理输入函数之后发生改变,但可以通过WINDOW结构的_leave标志重新定位它
+<ul class="org-ul">
+<li>如果设置了_leave标志,在输入结束后,逻辑光标将会移动到物理光标指向的窗口中最后写入的区域.
+</li>
+<li>如果没有设置_leave标志,在输入操作结束后,物理光标将返回到逻辑光标指向窗口的地一个字符移动位置
+</li>
+<li>_leave标志由leaveok()函数控制的
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-2-5-2" class="outline-4">
+<h4 id="sec-2-5-2">光标移动函数</h4>
+<div class="outline-text-4" id="text-2-5-2">
+<div class="org-src-container">
+
+<pre class="src src-c">/**
+@brief 移动逻辑光标到指定的位置
+@param x x坐标,表示移动后位置所在的行数
+@param y y坐标,表示移动后位置所在的列数
+ */
+int move(int x,int y);
+
+/**
+@brief 移动物理光标到指定位置
+@param last_x 移动前光标所处的行位置
+@param last_y 移动前光标所处的列位置
+@param new_x 移动后光标所处的行位置
+@param new_y 移动后光标所处的列位置
+@note mvcur()不用等待屏幕刷新就会立即生效
+ */
+void mvcur(int last_x,int last_y,int new_x,int new_y);
+
+/**
+@brief 设置物理光标的状态
+@param visibility 物理光标的状态
+       0  隐藏
+       1  正常
+       2  高亮显示
+ */
+int curs_set(int visiblility)
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-2-6" class="outline-3">
+<h3 id="sec-2-6">清屏函数</h3>
+<div class="outline-text-3" id="text-2-6">
+<div class="org-src-container">
+
+<pre class="src src-c">/**
+@brief 清除屏幕上的所有字符,并且将光标移动到屏幕的原点
+@note clear()会自动调用clearok()函数,这使得clear()函数能够清除物理屏幕上的那些curses无法识别的垃圾
+@see wclear()
+ */
+int clear();
+
+/**
+@brief 清除屏幕上所有字符
+@note 它不会自动调用clearok()函数,因此它并不是一种最彻底的清除方式
+@see werase()
+ */
+int erase();
+
+/**
+@brief 清楚从当前光标位置到屏幕底端的所有内容
+@note 会改变当前光标的位置
+ */
+int clrtoeol();
+
+/**
+@brief 清除屏幕上当前位置到该行末尾的所有字符
+@note 会改变当前光标的位置
+ */
+int clrtobot();
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-2-7" class="outline-3">
+<h3 id="sec-2-7">颜色属性</h3>
+<div class="outline-text-3" id="text-2-7">
+</div><div id="outline-container-sec-2-7-1" class="outline-4">
+<h4 id="sec-2-7-1">颜色说明</h4>
+<div class="outline-text-4" id="text-2-7-1">
+<ul class="org-ul">
+<li>curses库中使用RGB方法来表示一种颜色
+</li>
+<li>默认的颜色有
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+
+<col  class="right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="left">颜色</th>
+<th scope="col" class="right">索引号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="left">COLOR_BLACK</td>
+<td class="right">0</td>
+</tr>
+
+<tr>
+<td class="left">COLOR_RED</td>
+<td class="right">1</td>
+</tr>
+
+<tr>
+<td class="left">COLOR_GREEN</td>
+<td class="right">2</td>
+</tr>
+
+<tr>
+<td class="left">COLOR_YELLOW</td>
+<td class="right">3</td>
+</tr>
+
+<tr>
+<td class="left">COLOR_BLUE</td>
+<td class="right">4</td>
+</tr>
+
+<tr>
+<td class="left">COLOR_MAGENTA</td>
+<td class="right">5</td>
+</tr>
+
+<tr>
+<td class="left">COLOR_CYAN</td>
+<td class="right">6</td>
+</tr>
+
+<tr>
+<td class="left">COLOR_WHITE</td>
+<td class="right">7</td>
+</tr>
+
+<tr>
+<td class="left">&#xa0;</td>
+<td class="right">&#xa0;</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-2-7-2" class="outline-4">
+<h4 id="sec-2-7-2">颜色函数及变量</h4>
+<div class="outline-text-4" id="text-2-7-2">
+<div class="org-src-container">
+
+<pre class="src src-c">int COLORS; /**终端能够支持的最大颜色数目 */
+
+int COLORS_PAIRS; /**终端能够支持的颜色配对表的最大数目 */
+
+chtype COLOR_PAIR(n); /**根据索引号返回初始化的颜色配对表中的颜色属性 */
+
+/**
+@brief 将终端的颜色f恢复到终端打开时候的状态
+@return ERR 终端不支持彩色
+@return OK 成功
+@note 一般在调用了initscr()函数之后就调用这个函数,它初始化颜色表,同时i初始化变量COLORS和COLOR_PAIRS
+ */
+int start_color();
+
+/**
+@brief 改变颜色配对表条目中的颜色定义
+@param 颜色配对索引
+@param 前景色
+@param 背景色
+ */
+int init_pair(short pair,short f,short b);
+
+/**
+@brief 更改颜色定义
+@param color 被更改定义的颜色
+@param r 红色背景分量
+@param b 蓝色背景分量
+@param g 绿色背景分量
+ */
+int init_color(short color,short r,short b,short g);
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3">curses库窗口(WINDOW)处理</h2>
+<div class="outline-text-2" id="text-3">
+</div><div id="outline-container-sec-3-1" class="outline-3">
+<h3 id="sec-3-1">什么是窗口</h3>
+<div class="outline-text-3" id="text-3-1">
+<ul class="org-ul">
+<li>窗口是屏幕上的一块区域,在其上面可以进行各种输出及其操作.
+</li>
+<li>窗口可以位于标准屏幕的任意位置,窗口之间可以相互重叠.
+</li>
+<li>窗口可以同时包含与它们相关的子窗口,任何在父窗口与子窗口重叠区域的变化会同时影响到他们中的任何一个
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-3-2" class="outline-3">
+<h3 id="sec-3-2">窗口操作</h3>
+<div class="outline-text-3" id="text-3-2">
+</div><div id="outline-container-sec-3-2-1" class="outline-4">
+<h4 id="sec-3-2-1">创建和删除窗口</h4>
+<div class="outline-text-4" id="text-3-2-1">
+<div class="org-src-container">
+
+<pre class="src src-c">/**
+@brief 创建窗口并返回WINDOW指针
+@param lines 需要创建窗口所占的总行数
+@param cols  需要创建窗口所占的总列数
+@param begin_x 窗口左上角所在的行数(x坐标)
+@param begin_y 窗口左上角所在的列数(y坐标)
+@return 返回WINDOW类型的指针,如果创建失败,函数返回NULL
+@note 如果lines或者cols为0,函数自动创建一个行数和列数分别为LINES和COLS的窗口.
+      所创建窗口的大小不能超过实际屏幕的大小,如果超过了,则返回失败.
+      对于不再使用的窗口有必要及时清屏,可以使用werase()和wclear()实现.
+      不管werase()还是wclear()都不能清除内存空间,需要调用delwin()释放内存.
+ */
+WINDOW* newwin(int lines,int cols,int begin_x,int begin_y);
+
+/**
+@brief 删除窗口
+@param win 待删除窗口的指针
+@note 在主窗口删除之前必须先删除与它相关连的所有子窗口
+ */
+int delwin(WINDOW* win);
+
+/**
+@breif 创建子窗口
+@param win 父窗口的指针
+@param lines,cols 子窗口的总行数和列数
+@param begin_x,begin_y 子窗口的左上角在标准屏幕的相对位置
+@note 注意相对位置是想对于*标准屏幕*的,而不是父窗口的!!
+ */
+WINDOW* subwin(WINDOW* win,int lines,int cols,int begin_x,int begin_y);
+
+/**
+@breif 创建子窗口
+@param win 父窗口的指针
+@param lines,cols 子窗口的总行数和列数
+@param begin_x,begin_y 子窗口的左上角在父窗口的相对位置
+@note 注意相对位置是想对于*父窗口*的,而不是标准屏幕的!!
+ */
+WINDOW* derwin(WINDOW* win,int lines,int cols,int begin_x,int begin_y);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-2-2" class="outline-4">
+<h4 id="sec-3-2-2">在窗口进行输入和输出</h4>
+<div class="outline-text-4" id="text-3-2-2">
+<div class="org-src-container">
+
+<pre class="src src-c">int wmove(WINDOW* win,int x,int y); /**移动光标到相对win的(x,y)处*/
+int waddch(WINDOW* win,int ch); /**在窗口的当前位置增加字符ch*/
+int mvwaddch(WINDOW* win,x,y,ch); /**在窗口中移动光标到x,y,同时输出ch*/
+int waddstr(WINDOW* win,char* str); /**输出str*/
+int mvwaddstr(WINDOW* win,int x,int y,char* str); /**将窗口光标移动到x,y,同时输出str*/
+int wprintw(WINDOW* win,char* fmt[,arg...]); /**在窗口中格式化输出*/
+int wgetch(WINDOW* win); /**在窗口中获取输入*/
+int mvwgetch(WINDOW* win,int x,int y);
+int wgetstr(WINDOW* win);
+int mvwgetstr(WINDOW* win,int x,int y,char* str);
+int wscanw(WINDOW* win,char* fmt[,args...]);
+int mvwscanw(WINDOW* win,int x,int y,char* fmt[,args...]);
+int winsch(WINDOW* win,int ch); /**在窗口中插入字符*/
+int mvwinsch(WINDOW* win,int x,int y,int ch);
+int winsertln(WINDOW* win,int x,int y); /**在窗口中插入一行*/
+int wdelch(WINDOW* win); /**在窗口中删除一个字符*/
+int mvwdelch(WINDOW* win,int x,int y);
+int wdeleteln(WINDOW* win);
+int wclear(WINDOW* win);
+int werase(WINDOW* win);
+int wclrtoeol(WINDOW* win);
+int wclrtobot(WINDOW* win);
+int wstandout(WINDOW* win);
+int wstandend(WINDOW* win);
+int wattrset(WINDOW* win,chtype atr);
+int wattroff(WINDOW* win,chtype atr);
+int wattron(WINDOW* win,chtype atr);
+
+/**
+@brief 复制srcwin的内容到dstwin中
+@param srcwin 被复制窗口的指针
+@param dstwin 接受复制窗口的指针
+@note srcwin和dstwin的尺寸不需要完全相同,如果srcwin大于dstwin窗口,函数仅仅复制srcwin中适合dstwin的部分
+      overlay()是一种非破坏性的复制,它不复制原窗口上的空字符,因此如果原窗口的某个位置为空字符,而目标窗口对应位置不为空字符,则目标窗口的原字符继续保留.
+ */
+int overlay(WINDOW* srcwin,WINDOW* dstwin);
+
+/**
+@brief 复制srcwin的内容到dstwin中
+@param srcwin 被复制窗口的指针
+@param dstwin 接受复制窗口的指针
+@note srcwin和dstwin的尺寸不需要完全相同,如果srcwin大于dstwin窗口,函数仅仅复制srcwin中适合dstwin的部分
+      overwrite()是一种破坏性的复制,它复制原窗口上的所有内容,包括空字符
+ */
+int overwrite(WINDOW* srcwin,WINDOW* dstwin);
+
+/**
+@brief 复制srcwin的部分内容到dstwin的指定部分上
+@param srcwin 复制的源窗口指针
+@param dstwin 复制的目标窗口指针
+@param srcminrow,srcmincol 源窗口待复制部分的左上角坐标
+@param dstminrow,dstmincol 目标窗口被复制部分的左上角坐标
+@param dstmaxrow,dstmaxcol 指示了需要复制区域的大小
+@param overlay 复制是否是破坏性的
+ */
+int copywin(WINDOW* scrwin,WINDOW* dstwin,int srciminrow,int srcmincol,int dstminrow,int dstmincol,int dstmaxrow,int dstmaxcol,int overlayFlag);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-2-3" class="outline-4">
+<h4 id="sec-3-2-3">窗口刷新</h4>
+<div class="outline-text-4" id="text-3-2-3">
+<div class="org-src-container">
+
+<pre class="src src-c">/**
+@breif 将窗口内容写入虚拟屏幕中,虚拟屏幕描述了将要显示的内容
+ */
+int wnoutrefresh(WINDOW* win);
+
+/**
+@brief 将虚拟屏幕内容刷新到物理屏幕中
+ */
+int doupdate(WINDOW* win);
+
+/**
+@brief 等价于先wnoutrefresh()再doupdate()
+ */
+int wrefresh(WINDOW* win);
+
+/**
+@brief 重画指定窗口
+ */
+int redrawwin(WINDOW* win);
+
+/**
+@brief 重画指定窗口的指定区域
+@param beg_line 区域的起始行
+@param num_lines 区域的行数
+ */
+int wredrawln(WINDOW* win,int beg_line,int num_lines);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-2-4" class="outline-4">
+<h4 id="sec-3-2-4">窗口其他属性操作</h4>
+<div class="outline-text-4" id="text-3-2-4">
+<div class="org-src-container">
+
+<pre class="src src-c">/**
+@brief 移动窗口到指定位置
+@param win 待移动的窗口
+@param x,y 移动的目标位置
+@note 移动窗口后,记得用wrefresh刷新窗口
+ */
+int mvwin(WINDOW* win,int x,inty);
+
+/**
+@brief 在窗口相互重叠时,激活指定窗口,使它获取当前操作的焦点
+ */
+void touchwin(WINDOW* win);
+
+/**
+@brief 给窗口加上边框
+@param win 需要画出边框的窗口
+@vert 垂直方向的字符,通常为ACS_VLINE
+@hort 水平方向的字符,通常为ACS_HLINE
+ */
+int box(WINDOW* win,chtype vert,chtype hort);
+
+/**
+@breif给窗口加上边框
+@param win 需要画出边框的窗口
+@param ls 窗口左边字符 //left side
+@param rs 窗口右边字符 //right side
+@param ts 窗口上边字符 //top side
+@param bs 窗口下边字符 //buttom side
+@param tl 窗口左上角字符 //top left
+@param tr 窗口右上角字符 //top right
+@param bl 窗口左下角字符 //buttom left
+@param br 窗口右下角字符 //buttom right
+ */
+int border(WINDOW* win,chtype ls,chtype,rs,chtype ts,chtype bs,chtype tl,chtype tr,chtype bl,chtype br);
+
+/**
+@brief 在标准屏幕绘制横线
+@param ch 直线支付
+@param n 制定最大线长度
+ */
+int hline(chtype ch,int n);
+
+/**
+@brief 在标准屏幕绘制竖线
+@param ch 直线字符
+@param n 制定最大线长度
+ */
+int vline(chtype ch,int n);
+
+/**
+@brief 在指定窗口绘制横线
+@param win 指定窗口
+@param ch 直线支付
+@param n 制定最大线长度
+ */
+int whline(WINDOW* win,chtype ch,int n);
+
+/**
+@brief 在指定窗口绘制竖线
+@param win 指定窗口
+@param ch 直线字符
+@param n 制定最大线长度
+ */
+int wvline(WINDOW* win,chtype ch,int n);
+
+/**
+@brief 设置窗口的相应标志
+@param state TRUE则设置该标志,FLASE则取消设置
+ */
+void leaveok(WINDOW* win,bool state);
+void scrollok(WINDOW* win,bool state);
+void clearok(WINDOW* win,bool state);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-2-5" class="outline-4">
+<h4 id="sec-3-2-5">屏幕的转存</h4>
+<div class="outline-text-4" id="text-3-2-5">
+<div class="org-src-container">
+
+<pre class="src src-c">/**
+@brief 将win中所有数据写入fp中
+ */
+int putwin(WINDOW* win,FILE* fp);
+
+/**
+@brief 由fp内容创建窗口
+ */
+WINDOW* getwin(FILE* fp);
+
+/**
+@brief 存储标准屏幕
+ */
+int scr_dump(const char* filename);
+
+/**
+@brief 读取标准屏幕
+ */
+int src_restore(const char* filename);
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4">curses库基垫(pad)处理</h2>
+<div class="outline-text-2" id="text-4">
+</div><div id="outline-container-sec-4-1" class="outline-3">
+<h3 id="sec-4-1">基垫说明</h3>
+<div class="outline-text-3" id="text-4-1">
+<ul class="org-ul">
+<li>基垫也是一种窗口,它在各方面与WINDOW一样,只是它的大小和位置不再局限于终端屏幕的可视部分.
+</li>
+<li>与子窗口类似,基垫也同样有子基垫(subpad)
+</li>
+<li>大部分窗口操作的函数都可以直接作用在基垫上,只有少数才是基垫独有的.
+</li>
+<li>由于基垫可以完全看不见,这就导致了基垫与WINDOW的一个最主要的差异,即基垫与标准屏幕没有直接关联
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-4-2" class="outline-3">
+<h3 id="sec-4-2">基垫函数说明</h3>
+<div class="outline-text-3" id="text-4-2">
+<div class="org-src-container">
+
+<pre class="src src-c">/**
+@brief 创建新基垫
+@param lines,cols 指定创建基垫的总行数和总列数
+@return 失败的话,返回NULL
+@note 由于与标准屏幕没有任何关联,因此参数中不需要在标准屏幕中的定位参数
+ */
+WINDOW* newpad(int lines,int cols);
+
+/**
+@brief 创建子基垫
+@param pad 要创建子基垫的父基垫
+@param lines,cols 子基垫的行数和列数
+@param begin_x,begin_y 子基垫左上方在父基垫中的相对位置
+ */
+WINDOW* subpad(WINDOW* pad,int lines,int cols,int begin_x,int begin_y);
+
+/**
+@brief 刷新基垫指定区域
+@param prow,pcol 描述了基垫中需要刷新到标准屏幕中的区域的左上角
+@param sminrow,smincol,smaxrow,smaxcol 指示标准屏幕上显示基垫的矩形区域
+@see   pnoutrefresh() doupdate()
+
+ */
+int prefresh(WINDOW* pad,int prow,int pcol,int simnrow,int smincol,int smaxrow,int smaxcol);
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+    <div>
+      <div class="post-meta">
+        <span title="post date" class="post-info">2014-05-29</span>
+        <span title="last modification date" class="post-info">2014-05-24</span>
+        <span title="tags" class="post-info">N/A</span>
+        <span title="author" class="post-info">DarkSun</span>
+      </div>
+      <section>
+        <h1>Comments</h1>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          //var disqus_developer = 1;
+          var disqus_identifier = "/Programming/curses/";
+          var disqus_url = "http://lujun9972.github.io/Programming/curses/";
+          var disqus_shortname = 'darksun';
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      </section>
+      <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+      <script src="https://google-code-prettify.googlecode.com/svn/loader/prettify.js"></script>
+      <script src="/media/js/main.js"></script>
+      <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-51314019-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+      </script>
+      <div class="footer">
+        <p>Generated by <a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.x (<a href="http://orgmode.org">Org mode</a> 8.x)</p>
+        <p>
+          Copyright &copy; 2012 - 2014 <a href="mailto:lujun9972 &lt;at&gt; gmail &lt;dot&gt; com">DarkSun</a>
+          &nbsp;&nbsp;-&nbsp;&nbsp;
+          Powered by <a href="https://github.com/kelvinh/org-page" target="_blank">org-page</a>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
+

@@ -1,8 +1,5 @@
-#ifndef _STRING_TOOLS_H
-#define _STRING_TOOLS_H
-
 #include "qli.h"
-#define MAXSTRING 4096
+
 // FIXME
 char strbuf[MAXSTRING+1];
 
@@ -50,4 +47,21 @@ split(char *str, int division){
     return ptrs;
 }
 
-#endif
+void *
+Malloc(size_t size){
+    void *ptr;
+    if(NULL == (ptr = malloc(size))){
+        err_sys("malloc error");
+    }
+    return ptr;
+}
+
+void *
+Calloc(size_t nmemb, size_t size){
+    void *ptr;
+    if(NULL == (ptr = calloc(nmemb, size))){
+        err_sys("calloc error");
+    }
+    return ptr;
+}
+

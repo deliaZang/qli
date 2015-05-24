@@ -65,7 +65,7 @@ public class Uploader {
 			return;
 		}
 		DiskFileItemFactory dff = new DiskFileItemFactory();
-		String savePath = this.getFolder(this.savePath);
+		String savePath = this.getFolder();
 		dff.setRepository(new File(savePath));
 		try {
 			ServletFileUpload sfu = new ServletFileUpload(dff);
@@ -84,7 +84,7 @@ public class Uploader {
 					this.type = this.getFileExt(this.fileName);
 					this.url = savePath + "/" + this.fileName;
 					BufferedInputStream in = new BufferedInputStream(fis.openStream());
-					File file = new File(this.getPhysicalPath(this.url));
+					File file = new File(this.url);
 					FileOutputStream out = new FileOutputStream( file );
 					BufferedOutputStream output = new BufferedOutputStream(out);
 					Streams.copy(in, output, true);
@@ -116,34 +116,6 @@ public class Uploader {
 			this.state = this.errorInfo.get("REQUEST");
 		} catch (Exception e) {
 			this.state = this.errorInfo.get("UNKNOWN");
-		}
-	}
-	
-	/**
-	 * 接受并保存以base64格式上传的文件
-	 * @param fieldName
-	 */
-	public void uploadBase64(String fieldName){
-		String savePath = this.getFolder(this.savePath);
-		String base64Data = this.request.getParameter(fieldName);
-		this.fileName = this.getName("test.png");
-		this.url = savePath + "/" + this.fileName;
-		BASE64Decoder decoder = new BASE64Decoder();
-		try {
-			File outFile = new File(this.getPhysicalPath(this.url));
-			OutputStream ro = new FileOutputStream(outFile);
-			byte[] b = decoder.decodeBuffer(base64Data);
-			for (int i = 0; i < b.length; ++i) {
-				if (b[i] < 0) {
-					b[i] += 256;
-				}
-			}
-			ro.write(b);
-			ro.flush();
-			ro.close();
-			this.state=this.errorInfo.get("SUCCESS");
-		} catch (Exception e) {
-			this.state = this.errorInfo.get("IO");
 		}
 	}
 
@@ -183,37 +155,10 @@ public class Uploader {
 				+ System.currentTimeMillis() + this.getFileExt(fileName);
 	}
 
-	/**
-	 * 根据字符串创建本地目录 并按照日期建立子目录返回
-	 * @param path 
-	 * @return 
-	 */
-	private String getFolder(String path) {
-		SimpleDateFormat formater = new SimpleDateFormat("yyyyMMdd");
-		path += "/" + formater.format(new Date());
-		File dir = new File(this.getPhysicalPath(path));
-		if (!dir.exists()) {
-			try {
-				dir.mkdirs();
-			} catch (Exception e) {
-				this.state = this.errorInfo.get("DIR");
-				return "";
-			}
-		}
+	private String getFolder() {
+		String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+		path += "../resources/images/";
 		return path;
-	}
-
-	/**
-	 * 根据传入的虚拟路径获取物理路径
-	 * 
-	 * @param path
-	 * @return
-	 */
-	private String getPhysicalPath(String path) {
-		String servletPath = this.request.getServletPath();
-		String realPath = this.request.getSession().getServletContext()
-				.getRealPath(servletPath);
-		return new File(realPath).getParent() +"/" +path;
 	}
 
 	public void setSavePath(String savePath) {
@@ -233,7 +178,7 @@ public class Uploader {
 	}
 
 	public String getUrl() {
-		return this.url;
+		return "resources/images/" + this.fileName;
 	}
 
 	public String getFileName() {

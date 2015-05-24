@@ -1,33 +1,45 @@
 #include "qli.h"
 
-char http_head[] = "GET / HTTP/1.0\nHost:127.0.0.1:8080\n\n";
+char http_head[] = "GET /article/list.html HTTP/1.0\nHost:127.0.0.1:8080\n\n";
 
 int
 main(int argc, char *argv[])
 {
-    if(2 < argc){
-        printf("Usage: %s [addr] [post]\n", argv[0]);
-        exit(0);
+    setlocale(LC_ALL, "");
+
+    int sockfd, n;
+    char recivline[MAXLINE];
+    if(2 == argc){
+        sockfd = tcp_connect(argv[1], "80");
+    }else if(3 == argc){
+        sockfd = tcp_connect(argv[1], argv[2]);
+    }else{
+        err_quit("Usage: %s [addr] [post]\n", argv[0]);
     }
 
-    int fd, n;
-    char recivline[MAXLINE+1];
-    struct sockaddr_in addr;
-    short port = (NULL == argv[2]) ? 80 : atoi(argv[2]);
+    Write(sockfd, http_head, strlen(http_head));
 
-    fd = Socket(AF_INET, SOCK_STREAM, 0);
-    bzero(&addr, sizeof(addr));
-    Inet_pton(AF_INET, argv[1], &addr.sin_addr);
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
-
-    Connect(fd, (SA *)&addr, sizeof(addr));
-
-    Write(fd, http_head, strlen(http_head));
-    while((n = Read(fd, recivline, MAXLINE))){
-        recivline[n] = 0;
-        Fputs(recivline, stdout);
+#ifdef _MY_DEBUG
+    while(0 != (n = Read(sockfd, recivline, MAXLINE))){
+        Write(STDOUT_FILENO, recivline, n);
     }
-    close(fd);
+#else
+    FILE *temp, *file = fdopen(sockfd, "r");
+    while(EOF != read_line(file, recivline, MAXLINE)){
+        if(0 == strcmp("\r", recivline)){
+            break;
+        }
+    }
+    temp = fopen("abc.txt", "w+");
+    while(0 != (n = Read(sockfd, recivline, MAXLINE))){
+        Write(fileno(temp), recivline, n);
+    }
+    close(sockfd);
+
+    struct tab *tab = init_tab(temp);
+    display_tab(tab);
+    distroy_tab(tab);
+    Fclose(temp);
+#endif
     exit(0);
 }

@@ -1,6 +1,10 @@
-CC=gcc
-CFLAGS=-g -Wall
-LIBS=
+CFLAGS  += -g3 -Wall -I./include
+LDFLAGS += -L./lib -lqli -lncursesw
+
+ifeq ($(debug), true)
+DEBUG = debug=true
+CFLAGS += -D_MY_DEBUG
+endif
 
 SRC_DIR=.
 BIN_DIR=./bin
@@ -8,12 +12,14 @@ BIN_DIR=./bin
 BINS = \
     ${BIN_DIR}/web_browser
 
-
-all: ${BIN_DIR} ${BINS}
+all: begin ${BINS}
 clean:
-	@rm -f ${BINS}
+	(cd lib && make clean)
+	@rm -rf ${BINS}
 
-${BIN_DIR}:
+begin:
 	@mkdir -p ${BIN_DIR}
+	(cd lib && make ${DEBUG})
+
 ${BIN_DIR}/%: %.c
-	${CC} ${CFLAGS} -o $@ $< ${LIBS}
+	${CC} ${CFLAGS} -o $@ $^ ${LDFLAGS}

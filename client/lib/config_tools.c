@@ -1,24 +1,12 @@
-#ifndef _CONFIG_TOOLS_H
-#define _CONFIG_TOOLS_H
-
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdlib.h>
-
 #include "qli.h"
-#include "file_tools.h"
-#include "string_tools.h"
-
-#define CONF_NAME ".qli.config"
-
-#define N_GET 2
-#define KEY_SIZE 20
-#define VALUE_SIZE 50
 
 struct {
-    char user_name[VALUE_SIZE];
-    char user_token[VALUE_SIZE];
-}config;
+    char key[KEY_SIZE];
+    char *(*func)();
+}Gets[N_GET] = {
+    {"user name", get_user_name},
+    {"user token", get_user_token}
+};
 
 char *
 get_user_name(){
@@ -29,14 +17,6 @@ char *
 get_user_token(){
     return config.user_token;
 }
-
-struct {
-    char key[KEY_SIZE];
-    char *(*func)();
-}Gets[N_GET] = {
-    {"user name", get_user_name},
-    {"user token", get_user_token}
-};
 
 void
 do_gets(char *key_value){
@@ -66,5 +46,3 @@ load_config(){
     }
     fclose(file);
 }
-
-#endif

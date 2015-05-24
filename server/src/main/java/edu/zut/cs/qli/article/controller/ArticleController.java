@@ -5,16 +5,11 @@ import edu.zut.cs.qli.article.service.ArticleManager;
 import edu.zut.cs.qli.base.controller.BaseEntityController;
 import edu.zut.cs.qli.catalog.service.CatalogManager;
 import edu.zut.cs.qli.utils.FileUtil;
-import edu.zut.cs.qli.utils.MyPageable;
 import edu.zut.cs.qli.utils.Uploader;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,7 +26,7 @@ public class ArticleController extends
     ArticleManager articleManager;
 
     @Autowired
-    public void setArticleManager(ArticleManager articleManager) {
+    public void setUserManager(ArticleManager articleManager) {
         this.articleManager = articleManager;
         this.manager = this.articleManager;
     }
@@ -55,12 +50,8 @@ public class ArticleController extends
         return "article/main";
     }
     @RequestMapping(method = RequestMethod.GET, value = "/list")
-    public String list(Model model,Integer pageIndex) {
-        if ( null == pageIndex){
-            pageIndex = 1;
-        }
-        Page<Article> page = articleManager.findAll(new MyPageable(pageIndex-1,2));
-        model.addAttribute("page", page);
+    public String list(Model model) {
+        model.addAttribute("articles", articleManager.findAll());
         return "article/list";
     }
     @RequestMapping(method = RequestMethod.GET, value = "/show")
@@ -93,7 +84,7 @@ public class ArticleController extends
         return "保存成功！";
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/delete")
+    @RequestMapping(method = RequestMethod.DELETE, value = "/delete")
     @ResponseBody
     public String doDelete(@RequestParam long id) {
         // FIXME 删除今后需要改为设置删除标志，但这样的话也要将list函数排除删除标志，这个还需要考虑下
@@ -132,6 +123,6 @@ public class ArticleController extends
     @RequestMapping(method = RequestMethod.GET, value = "/lasted", produces = "application/json")
     @ResponseBody
     public List<Article> getLastedList(){
-        return this.articleManager.findLasted();
+        return this.articleManager.findHot();
     }
 }
