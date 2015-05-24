@@ -26,7 +26,7 @@
 </head>
 <body>
 
-<form action="/article/fileUp.html" method="post" enctype="multipart/form-data">
+<form action="/article/fileUp.do" method="post" enctype="multipart/form-data">
     <input type="file" name="file"/>
     <input type="submit" name="上传"/>
 </form>
