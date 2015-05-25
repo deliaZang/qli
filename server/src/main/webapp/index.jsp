@@ -64,7 +64,7 @@
     <div class="row-fluid" id="main">
         <div class="span12">
             <iframe name="mainView"
-                    style="border:none; width: 100%; height: 80%; float: inherit;margin-right: 10px;"
+                    style="border:none; width: 100%; height: 610px; float: inherit;margin-right: 10px;"
                     src="<%=path%>/article/main.html"></iframe>
         </div>
     </div>

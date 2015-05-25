@@ -12,10 +12,10 @@ public class MyPageable extends PageRequest{
 	 */
 	private static final long serialVersionUID = -6665380431264357448L;
 
-	private static final int DEFAULT_PANGE_NUM = 0; //ºóÌ¨·ÖÒ³´Ó0¿ªÊ¼£¬Ç°Ì¨´Ó1¿ªÊ¼
-	private static final int DEFAULT_SIZE = 2;
+	private static final int DEFAULT_PANGE_NUM = 0; //ï¿½ï¿½Ì¨ï¿½ï¿½Ò³ï¿½ï¿½0ï¿½ï¿½Ê¼ï¿½ï¿½Ç°Ì¨ï¿½ï¿½1ï¿½ï¿½Ê¼
+	private static final int DEFAULT_SIZE = 10;
 	public MyPageable(){
-		super(DEFAULT_PANGE_NUM, DEFAULT_SIZE); //¼É»äÕâÀïÖ±½ÓÐ´0ºÍ20£¬Õâ½ÐÉñÏÉÊý
+		super(DEFAULT_PANGE_NUM, DEFAULT_SIZE); //ï¿½É»ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½Ð´0ï¿½ï¿½20ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	}
 
 	public MyPageable(int page, int size, Direction direction,
@@ -32,25 +32,25 @@ public class MyPageable extends PageRequest{
 	}
 
 	public void setNumPerPage(int size){
-		//µÃµ½AbstractPageRequestµÄclass¶ÔÏó
+		//ï¿½Ãµï¿½AbstractPageRequestï¿½ï¿½classï¿½ï¿½ï¿½ï¿½
 		Class<?> claz = this.getClass().getSuperclass().getSuperclass();
 		try {
 			Field sizeField = claz.getDeclaredField("size");
 			sizeField.setAccessible(true);
-			sizeField.set(this, size); //ÐÞ¸ÄÄÄ¸ö¶ÔÏóµÄsizeÊôÐÔ£¿´«µÝµÄÊÇµ±Ç°¶ÔÏó¼´¿É
+			sizeField.set(this, size); //ï¿½Þ¸ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sizeï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½Ýµï¿½ï¿½Çµï¿½Ç°ï¿½ï¿½ï¿½ó¼´¿ï¿½
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			throw new RuntimeException("Í¨¹ý·´ÉäÐÞ¸ÄAbstractPageRequestµÄsizeÊôÐÔ³öÏÖÒì³£", e);
+			throw new RuntimeException("Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½AbstractPageRequestï¿½ï¿½sizeï¿½ï¿½ï¿½Ô³ï¿½ï¿½ï¿½ï¿½ì³£", e);
 		}
 	}
 	public void setPageNum(int page){
-		//µÃµ½AbstractPageRequestµÄclass¶ÔÏó
+		//ï¿½Ãµï¿½AbstractPageRequestï¿½ï¿½classï¿½ï¿½ï¿½ï¿½
 		Class<?> claz = this.getClass().getSuperclass().getSuperclass();
 		try {
 			Field pageField = claz.getDeclaredField("page");
 			pageField.setAccessible(true);
-			pageField.set(this, page - 1); //ÐÞ¸ÄÄÄ¸ö¶ÔÏóµÄsizeÊôÐÔ£¿´«µÝµÄÊÇµ±Ç°¶ÔÏó¼´¿É
+			pageField.set(this, page - 1); //ï¿½Þ¸ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sizeï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½Ýµï¿½ï¿½Çµï¿½Ç°ï¿½ï¿½ï¿½ó¼´¿ï¿½
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			throw new RuntimeException("Í¨¹ý·´ÉäÐÞ¸ÄAbstractPageRequestµÄpageÊôÐÔ³öÏÖÒì³£", e);
+			throw new RuntimeException("Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½AbstractPageRequestï¿½ï¿½pageï¿½ï¿½ï¿½Ô³ï¿½ï¿½ï¿½ï¿½ì³£", e);
 		}
 	}
 

@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -58,7 +57,7 @@ public class ArticleController extends
         if (null == pageIndex) {
             pageIndex = 1;
         }
-        Page<Article> page = articleManager.findAll(new MyPageable(pageIndex - 1, 2));
+        Page<Article> page = articleManager.findAll(new MyPageable(pageIndex - 1, 8));
         model.addAttribute("page", page);
         return "article/list";
     }
@@ -155,27 +154,23 @@ public class ArticleController extends
         return list(model, 1);
     }
 
+    /**
+     * 获取最热门课程
+     * @return
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/hot", produces = "application/json")
     @ResponseBody
     public List<Article> getHotList() {
         return this.articleManager.findHot();
     }
 
+    /**
+     * 获取最新课程
+     * @return
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/lasted", produces = "application/json")
     @ResponseBody
     public List<Article> getLastedList() {
         return this.articleManager.findLasted();
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/file", produces = "application/json")
-    @ResponseBody
-    public List<Article> getFileList() {
-        return this.articleManager.findFileList();
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/web", produces = "application/json")
-    @ResponseBody
-    public List<Article> getWebList() {
-        return this.articleManager.findWebList();
     }
 }

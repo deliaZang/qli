@@ -125,14 +125,7 @@
                 <label class="control-label" for="nick">昵称</label>
 
                 <div class="controls">
-                  <input type="text" class="input" id="nick" value="${user.nickname}">
-                </div>
-              </div>
-              <div class="control-group">
-                <label class="control-label" for="birthday">生日</label>
-
-                <div class="controls">
-                  <input type="text" class="input" id="birthday" value="${user.birthday}">
+                  <input type="text" class="input" id="nick" value="${user.nick}">
                 </div>
               </div>
               <div class="form-actions">

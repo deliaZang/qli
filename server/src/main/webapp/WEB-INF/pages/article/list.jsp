@@ -34,20 +34,22 @@
     });
     //删除
     function doDelete(id) {
-      $.ajax({
-        type: "post",
-        url: "<%=path%>/article/delete.html",
-        data: {id: id},
-        success: function (json) {
-          if(json == 'SUCCESS'){
-            alert('删除成功');
-          }
+      if(window.confirm("确认要删除吗?")){
+        $.ajax({
+          type: "post",
+          url: "<%=path%>/article/delete.html",
+          data: {id: id},
+          success: function (json) {
+            if(json == 'SUCCESS'){
+              alert('删除成功');
+            }
 
-        },
-        error: function () {
-          alert("删除失败");
-        }
-      });
+          },
+          error: function () {
+            alert("删除失败");
+          }
+        });
+      }
     }
 
     //批量删除
@@ -90,9 +92,9 @@
     }
   </style>
 </head>
-<body>
+<body style="overflow-y:hidden">
 <div class="container-fluid" align="center">
-  <div class="panel panel-default">
+  <div class="panel panel-default" style="height: 57px;">
     <c:if test="${user.role == 'teacher'}">
       <div class="panel-heading" style="float: left;">
         <a>
@@ -106,10 +108,7 @@
     </c:if>
   </div>
 
-  <form>
-
-  </form>
-  <div class="row-fluid" style="height:45%">
+  <div class="row-fluid">
     <!-- 目录-->
     <table class="table">
       <tr>
@@ -157,11 +156,11 @@
       </c:forEach>
     </table>
   </div>
-  <div>
-    <nav>
-      总共${page.totalElements}条
+  <div >
+    <nav style="height: 65px;">
+ <%--     总共${page.totalElements}条
       总共${page.totalPages}页
-      当前页${page.number+1}
+      当前页${page.number+1}--%>
 
       <ul class="pagination">
         <!--如果是第一页-->

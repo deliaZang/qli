@@ -46,7 +46,7 @@
                             <li><a href="<%=path%>/user/login.html" class="colblue">登录</a></li>
                             <li><a href="<%=path%>/user/register.html" class="colf1">注册</a></li>
                             <%} else {%>
-                            <li><a href="<%=path%>/user/personal.html">您好，${user.nick}</a>
+                            <li><a href="<%=path%>/user/personal.html"  target="mainView">您好，${user.nick}</a>
                             <li><a href="<%=path%>/user/exit.html" class="colf1">退出</a></li>
                             <%}%>
                             <li class="dropdown pull-right">
@@ -69,7 +69,7 @@
     <div class="row-fluid" id="main">
         <div class="span12">
             <iframe name="mainView"
-                    style="border:none; width: 100%; height: 80%; float: inherit;margin-right: 10px;"
+                    style="border:none; width: 100%; height:610px; float: inherit;margin-right: 10px;"
                     src="<%=path%>/article/main.html"></iframe>
         </div>
     </div>

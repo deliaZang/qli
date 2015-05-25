@@ -15,9 +15,24 @@
         var basePath = localObj.protocol + "//" + localObj.host + "/";
     </script>
     <script type="text/javascript" src="<%=path%>/resources/js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="<%=path%>/resources/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="<%=path%>/resources/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="<%=path%>/resources/js/messages_zh.js"></script>
     <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap.css"  rel="stylesheet"/>
     <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap-theme.css"  rel="stylesheet"/>
-    <script type="text/javascript" src="<%=path%>/resources/js/bootstrap.min.js"></script>
+    <script type="application/javascript">
+        $(function () {
+            $("#loginForm").validate({
+                rules: {
+                    name: {required: true, minlength: 6},
+                    password: {required: true, minlength: 6}
+                },
+                errorPlacement: function (error, element) {
+                    error.appendTo(element.siblings("span"));
+
+                }});
+        });
+    </script>
 </head>
 <style type="text/css">
     .container {
@@ -43,7 +58,7 @@
     </c:if>
 </div>
 <div class="container" align="center">
-    <form class="form-horizontal well" method="post" action="<%=path%>/user/login.html">
+    <form class="form-horizontal well" id="loginForm" method="post" action="<%=path%>/user/login.html">
         <div class="panel panel-primary">
             <div class="panel-heading">用户登录</div>
             <div class="panel-body">
@@ -57,10 +72,14 @@
                 <div class="control-group">
                     <label class="control-label" for="userId">用户名</label>
                     <input type="text" id="userId" class="input" placeholder="用户名" name="name">
+                    <font color="red">*</font><br>
+                    <span></span>
                 </div>
                 <div class="control-group">
                     <label class="control-label" for="password">密码&nbsp;&nbsp;</label>
                     <input type="password" class="input" placeholder="密码" id="password" name="password">
+                    <font color="red">*</font><br>
+                    <span></span>
                 </div>
                 <div class="control-group">
                     <div class="controls">
