@@ -17,12 +17,12 @@ import java.util.List;
 public class Catalog extends BaseEntityDomain {
 
     @JsonBackReference
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "a_id", nullable = false)
     private Article article;
 
     @JsonBackReference
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "p_id")
     private Catalog parent;
 

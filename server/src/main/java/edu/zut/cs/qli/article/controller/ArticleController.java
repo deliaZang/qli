@@ -4,19 +4,18 @@ import edu.zut.cs.qli.article.domain.Article;
 import edu.zut.cs.qli.article.service.ArticleManager;
 import edu.zut.cs.qli.base.controller.BaseEntityController;
 import edu.zut.cs.qli.catalog.service.CatalogManager;
+import edu.zut.cs.qli.user.domain.User;
 import edu.zut.cs.qli.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -24,6 +23,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/article")
+@SessionAttributes("user")
 public class ArticleController extends
         BaseEntityController<Article, Long, ArticleManager> {
 
@@ -52,15 +52,17 @@ public class ArticleController extends
     public String main() {
         return "article/main";
     }
+
     @RequestMapping(method = RequestMethod.GET, value = "/list")
-    public String list(Model model,Integer pageIndex) {
-        if ( null == pageIndex){
+    public String list(Model model, Integer pageIndex) {
+        if (null == pageIndex) {
             pageIndex = 1;
         }
-        Page<Article> page = articleManager.findAll(new MyPageable(pageIndex-1,2));
+        Page<Article> page = articleManager.findAll(new MyPageable(pageIndex - 1, 2));
         model.addAttribute("page", page);
         return "article/list";
     }
+
     @RequestMapping(method = RequestMethod.GET, value = "/show")
     public String show(@RequestParam long id, Model model) {
         Article article = articleManager.findDetailById(id);
@@ -81,10 +83,14 @@ public class ArticleController extends
     @RequestMapping(method = RequestMethod.POST, value = "/do")
     @ResponseBody
     public String doSave(@RequestParam(required = false, defaultValue = "0") Long id,
-                  @RequestParam String title,
-                  @RequestParam String content) {
+                         @RequestParam String title,
+                         @RequestParam String type,
+                         @RequestParam String content,
+                         Model model) {
         Article article = (0 == id) ? new Article() : articleManager.findById(id);
+        article.setUser((User) model.asMap().get("user"));
         article.setTitle(title);
+        article.setType(type);
         article.setName(FileUtil.createUniqueName());
 
         articleManager.doSave(article, content);
@@ -103,7 +109,7 @@ public class ArticleController extends
     @ResponseBody
     public String deleteBatch(@RequestParam List<Long> ids) {
         // FIXME 删除今后需要改为设置删除标志，但这样的话也要将list函数排除删除标志，这个还需要考虑下
-        for (Long id: ids) {
+        for (Long id : ids) {
             doDelete(id);
         }
         return Constants.MESSAGE_SUCCESS;
@@ -132,17 +138,17 @@ public class ArticleController extends
         }
     }
 
-    // FIXME 没有添加异常处理，其实只用返回前端说明上传状态就可以了
     @RequestMapping(method = RequestMethod.POST, value = "/fileUp")
-    public String fileUp(@RequestParam MultipartFile file, Model model){
+    public String fileUp(@RequestParam MultipartFile file, Model model) {
         String fileName = file.getOriginalFilename();
-        if(!(fileName.endsWith(".ppt") || fileName.endsWith(".pptx"))){
+        if (!(fileName.endsWith(".ppt") || fileName.endsWith(".pptx"))) {
             model.addAttribute("message", Constants.MESSAGE_WARN);
             return edit(0L, model);
         }
         try {
-            doSave(0L, fileName, FileParseUtil.getPPTContent(file.getInputStream()));
-        }catch (Exception e){
+            // FIXME 我不知道为什么要分类，而且应该是系统编程啊，这要弄的话文件上传也得分类，弄这干啥都
+//            doSave(0L, fileName, "NONE", FileParseUtil.getPPTContent(file.getInputStream()));
+        } catch (Exception e) {
             model.addAttribute("message", Constants.MESSAGE_ERROR);
         }
         model.addAttribute("message", Constants.MESSAGE_SUCCESS);
@@ -151,25 +157,25 @@ public class ArticleController extends
 
     @RequestMapping(method = RequestMethod.GET, value = "/hot", produces = "application/json")
     @ResponseBody
-    public List<Article> getHotList(){
+    public List<Article> getHotList() {
         return this.articleManager.findHot();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/lasted", produces = "application/json")
     @ResponseBody
-    public List<Article> getLastedList(){
+    public List<Article> getLastedList() {
         return this.articleManager.findLasted();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/file", produces = "application/json")
     @ResponseBody
-    public List<Article> getFileList(){
+    public List<Article> getFileList() {
         return this.articleManager.findFileList();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/web", produces = "application/json")
     @ResponseBody
-    public List<Article> getWebList(){
+    public List<Article> getWebList() {
         return this.articleManager.findWebList();
     }
 }

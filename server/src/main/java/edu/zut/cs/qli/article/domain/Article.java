@@ -16,7 +16,7 @@ import java.util.List;
 @Table(name = "Article")
 public class Article extends BaseEntityDomain {
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "u_id", nullable = false)
     private User user;
 
@@ -52,6 +52,14 @@ public class Article extends BaseEntityDomain {
     @Transient
     private String content;
 
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public String getTitle() {
         return title;

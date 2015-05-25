@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 @RequestMapping("/user")
+@SessionAttributes("user")
 public class UserController extends BaseEntityController<User, Long, UserManager> {
 
     UserManager userManager;
@@ -45,12 +47,10 @@ public class UserController extends BaseEntityController<User, Long, UserManager
 
     @RequestMapping(method = RequestMethod.POST, value = "/login.html")
     public String loginCheck(@RequestParam String name,
-                             @RequestParam String password,
-                             HttpServletRequest request, Model model) {
-        User user = null;
-        user = userManager.findByName(name);
+                             @RequestParam String password,Model model) {
+        User user = userManager.findByName(name);
         if (user.getPassword().equals(password)) {
-            request.getSession().setAttribute("user", user);
+            model.addAttribute("user", user);
             return "user/index";
         } else {
             model.addAttribute("msg", "登录失败，用户名或密码错误");

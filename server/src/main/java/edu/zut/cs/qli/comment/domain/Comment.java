@@ -13,11 +13,11 @@ import javax.persistence.*;
 @Table(name = "t_comment")
 public class Comment extends BaseEntityDomain {
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "a_id", nullable = false)
     private Article article;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "u_id", nullable = false)
     private User user;
 
