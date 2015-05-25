@@ -10,7 +10,7 @@ SRC_DIR=.
 BIN_DIR=./bin
 
 BINS = \
-    ${BIN_DIR}/web_browser
+    ${BIN_DIR}/main
 
 all: begin ${BINS}
 clean:

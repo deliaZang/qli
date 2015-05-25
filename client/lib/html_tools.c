@@ -297,6 +297,7 @@ parse_html(const struct html *parent, struct DLlist **list, FILE *file){
                 enum HtmlTag type = jurge_entity(file);
                 int len;
                 char *end;
+                long index;
                 switch(type){
                     case HTML_TAG_DOCTYPE:
                     case HTML_TAG_UNKNOWN:
@@ -312,6 +313,14 @@ parse_html(const struct html *parent, struct DLlist **list, FILE *file){
                         break;
                     case HTML_TAG_COMMENT:
                         file_over(file, "-->");
+                        break;
+                    case HTML_TAG_PRE:
+                        while('>' != fgetc(file));
+                        index = sunday(file, "</pre>");
+                        tag = new_tag(type, parent, NULL);
+                        *list = DLlist_insert(*list, tag);
+                        tag->data = copy_to_index(file, index);
+                        fseek(file, index+6, SEEK_SET);
                         break;
                     default:
                         tag = new_tag(type, parent, NULL);

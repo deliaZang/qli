@@ -127,7 +127,7 @@ deal_key_press(struct tab *tab){
                     link = DLlist_getdata(links(tab));
                     if(y == link->row){
                         //mvwprintw(win_tab(tab), start_line+2, 0, "%s", (char *)link->item->data);
-                        do_new_tab(link->item);
+                        web_browser(link->item->data);
                         break;
                     }
                     links(tab) = links(tab)->next;
@@ -210,11 +210,12 @@ after_img(struct html *cur){
 
 static void
 before_a(struct html *cur){
-    wattron(win_tab(cur_tab), A_UNDERLINE);
+    wattron(win_tab(cur_tab), A_UNDERLINE | COLOR_BLUE);
     waddch(win_tab(cur_tab), '\n');
 }
 static void
 dothis_a(struct html *cur){
+    // FIXME 应该用before和after获取坐标
     int y, x;
     getyx(win_tab(cur_tab), y, x);
     links(cur_tab) = DLlist_insert(links(cur_tab), new_link(y, x, cur));
@@ -222,7 +223,7 @@ dothis_a(struct html *cur){
 static void
 after_a(struct html *cur){
     waddch(win_tab(cur_tab), '\n');
-    wattroff(win_tab(cur_tab), A_UNDERLINE);
+    wattroff(win_tab(cur_tab), A_UNDERLINE | COLOR_BLUE);
 }
 
 static void
@@ -249,6 +250,19 @@ after_h(struct html *cur){
     waddch(win_tab(cur_tab), '\n');
     wattroff(win_tab(cur_tab), A_BOLD);
 }
+
+static void
+before_pre(struct html *cur){
+}
+static void
+dothis_pre(struct html *cur){
+    if(NULL == cur || NULL == cur->data) return;
+    waddstr(win_tab(cur_tab), (char*)cur->data);
+}
+static void
+after_pre(struct html *cur){
+}
+
 
 #define DEFAULT_FUNCS {(tag_func)before_default, (tag_func)dothis_default, (tag_func)after_default}
 #define H_FUNCS {(tag_func)before_h, (tag_func)dothis_h, (tag_func)after_h}
@@ -337,7 +351,7 @@ const struct tag_funcs tag_funcs[HTML_TAGS] = {
 	
 	[HTML_TAG_P] = DEFAULT_FUNCS,
 	[HTML_TAG_PARAM] = DEFAULT_FUNCS,
-	[HTML_TAG_PRE] = DEFAULT_FUNCS,
+	[HTML_TAG_PRE] = {(tag_func)before_pre, (tag_func)dothis_pre, (tag_func)after_pre},
 	
 	[HTML_TAG_Q] = DEFAULT_FUNCS,
 	

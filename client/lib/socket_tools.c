@@ -54,8 +54,7 @@ tcp_connect(const char *host, const char *serv){
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     if((n = getaddrinfo(host, serv, &hints, &res)) != 0){
-        err_quit("tcp_connect error for %s, %s: %s",
-            host, serv, gai_strerror(n));
+        return -1;
     }
     saveres = res;
     do{
@@ -70,7 +69,7 @@ tcp_connect(const char *host, const char *serv){
     }while(NULL != (res = res->ai_next));
     freeaddrinfo(saveres);
     if(NULL == res){
-        err_quit("tcp_connect error for %s, %s", host, serv);
+        return -1;
     }
     return sockfd;
 }

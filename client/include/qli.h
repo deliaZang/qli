@@ -91,6 +91,8 @@ long
 sunday(FILE *file, const char *pat);
 FILE *
 Tmpfile();
+char *
+copy_to_index(FILE *file, const long index);
 /**
    file_tools end
  */
@@ -196,7 +198,7 @@ struct html{
 };
 
 struct link{
-    int row, col;
+    int row, col, height, width;
     struct html *item;
 };
 

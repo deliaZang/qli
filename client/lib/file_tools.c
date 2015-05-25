@@ -176,3 +176,18 @@ Tmpfile(){
     }
     return f;
 }
+
+char *
+copy_to_index(FILE *file, const long index){
+    long start = ftell(file);
+    if(index <= start){
+        return NULL;
+    }
+    long i;
+    char *str = Calloc(index-start+1, sizeof(char));
+    for(i = 0; i < index-start; ++i){
+        str[i] = fgetc(file);
+    }
+    fseek(file, start, SEEK_SET);
+    return str;
+}
