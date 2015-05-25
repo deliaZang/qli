@@ -1,10 +1,4 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: shouhutsh
-  Date: 15-4-12
-  Time: 下午1:43
-  To change this template use File | Settings | File Templates.
---%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     String path = request.getContextPath();
@@ -25,27 +19,32 @@
     <script type="text/javascript" src="/resources/js/umeditor/lang/zh-cn/zh-cn.js"></script>
 </head>
 <body>
-
-<form action="/article/fileUp.do" method="post" enctype="multipart/form-data">
-    <input type="file" name="file"/>
-    <input type="submit" name="上传"/>
-</form>
-
 <div class="clearfix">
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="span12">
-                <!--最热 -->
+                <form class="form-inline" action="/article/fileUp.do" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="inputFile">上传PPT</label>
+                        <input type="file" id="inputFile" name="file" class="form-control">
+                        <input type="submit" name="上传" class="btn btn-default"/>
+                    </div>
+                </form>
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">文章编辑</h3>
                     </div>
                     <div class="panel-body">
                         <input type="hidden" id="id" value="${article.id}"/>
-
-                            <span><h4>标题</h4>
-                            <input type="text" id="title" value="${article.title}"/></span>
-
+                        <div class="form-group">
+                            <label for="title">标题</label>
+                            <input type="text" id="title" value="${article.title}" class="form-control" style="width: 80%;"/>
+                        </div>
+                        <div class="form-group">
+                            分类
+                            <input type="radio" name="type" value="fileProgram"/>文件编程
+                            <input type="radio" name="type" value="webProgram" />网络编程
+                        </div>
                         <h4>内容</h4>
                         <script type="text/plain" id="myEditor"
                                 style="width:80%;height:60%;">${article.content}</script>
@@ -60,10 +59,15 @@
 
 <script type="text/javascript">
     $(window).load(function () {
-        var msg = '${message}';
-        if (0 != msg.length) {
-            alert(msg);
-        }
+        <c:if test="${message =='SUCCESS'}">
+            alert('上传成功');
+        </c:if>
+        <c:if test="${message =='ERROR'}">
+        alert('上传失败');
+        </c:if>
+        <c:if test="${message =='WARN'}">
+        alert('只支持PPT格式');
+        </c:if>
     });
 </script>
 
@@ -82,6 +86,15 @@
 
         var id = document.getElementById("id").value;
         var title = document.getElementById("title").value;
+        var types = document.getElementsByName("type");
+        var type;
+        var types = document.getElementsByName("type");
+        for(var i=0;i<types.length;i++){
+            if(types[i].checked){
+                type=types[i].value;
+                break;
+            }
+        }
         var content = UM.getEditor('myEditor').getContent().
                 replace(/%/g, "%25").replace(/\&/g, "%26").replace(/\+/g, "%2B");
         xmlhttp.onreadystatechange = function () {
@@ -96,7 +109,7 @@
         };
         xmlhttp.open("POST", "/article/do.html", true);
         xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xmlhttp.send("id=" + id + "&title=" + title + "&content=" + content);
+        xmlhttp.send("id=" + id + "&title=" + title +"&type="+type+ "&content=" + content);
 
     }
 </script>

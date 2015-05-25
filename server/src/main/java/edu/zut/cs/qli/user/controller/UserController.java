@@ -3,6 +3,7 @@ package edu.zut.cs.qli.user.controller;
 import edu.zut.cs.qli.base.controller.BaseEntityController;
 import edu.zut.cs.qli.user.domain.User;
 import edu.zut.cs.qli.user.service.UserManager;
+import edu.zut.cs.qli.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,6 +38,11 @@ public class UserController extends BaseEntityController<User, Long, UserManager
         return "user/register";
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/personal.html")
+    public String personal() {
+        return "user/personal";
+    }
+
     @RequestMapping(method = RequestMethod.POST, value = "/login.html")
     public String loginCheck(@RequestParam String name,
                              @RequestParam String password,
@@ -54,6 +60,7 @@ public class UserController extends BaseEntityController<User, Long, UserManager
 
     @RequestMapping(method = RequestMethod.POST, value = "/register")
     public String saveUser(User user) {
+        user.setRole("student");
         this.userManager.save(user);
         return "user/login";
     }
@@ -67,4 +74,9 @@ public class UserController extends BaseEntityController<User, Long, UserManager
         return "user/index";
     }
 
+    @RequestMapping(method = RequestMethod.POST, value = "/update")
+    public String update(User user) {
+        this.userManager.save(user);
+        return Constants.MESSAGE_SUCCESS;
+    }
 }

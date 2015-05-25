@@ -36,13 +36,17 @@
                                 <a><span style="font-size: 24px">Linux课程设计</span></a></li>
                             <li><a href="<%=path%>/article/main.html" target="mainView">首页</a></li>
                             <li><a href="<%=path%>/article/list.html" target="mainView">目录</a></li>
-                            <li><a href="<%=path%>/comment/list.html" target="mainView">评论</a></li>
-                            <li><a href="<%=path%>/note/list.html" target="mainView">笔记</a></li>
+                            <c:if test="${user.role == 'teacher'}">
+                                <li><a href="<%=path%>/comment/list.html" target="mainView">评论</a></li>
+                            </c:if>
+                            <c:if test="${user.role == 'student'}">
+                                <li><a href="<%=path%>/note/list.html" target="mainView">笔记</a></li>
+                            </c:if>
                             <% if (null == user) {%>
                             <li><a href="<%=path%>/user/login.html" class="colblue">登录</a></li>
                             <li><a href="<%=path%>/user/register.html" class="colf1">注册</a></li>
                             <%} else {%>
-                            <li><a>您好，${user.nick}</a>
+                            <li><a href="<%=path%>/user/personal.html">您好，${user.nick}</a>
                             <li><a href="<%=path%>/user/exit.html" class="colf1">退出</a></li>
                             <%}%>
                             <li class="dropdown pull-right">

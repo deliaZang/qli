@@ -1,10 +1,4 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: ZL
-  Date: 2015/5/23
-  Time: 21:59
-  To change this template use File | Settings | File Templates.
---%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -104,37 +98,30 @@
 <div class="main">
     <div class="main_left">
         <div class="hot_book">
-            <span>最热课程</span>
+            <span>课程</span>
+
             <ul>
-                <li>
-                    <a href="#">第一DOM 内容放到一个盒子里。对于这种情况，DOM 内容放到一个盒子里。对于这种情况，</a>
+                <c:forEach items="${commentList}" var="c">
+                    <li>
+                        <a href="javascrit:void(0);">${c.article.title}</a>
 
-                    <div class="summry">
-                        虽然不总是必须，但是某些时候你可能需要将某些 DOM 内容放到一个盒子里。对于这种情况，可以试试面板组件。DOM 内容放到一个盒子里。对于这种情况，可以试试面板组件。
-                    </div>
-                </li>
-                <li>
-                    <a href="#">第一</a>
-
-                    <div class="summry">
-                        虽然不总是必须，但是某些时候你可能需要将某些 DOM 内容放到一个盒子里。对于这种情况，可以试试面板组件。
-                    </div>
-                </li>
+                        <div class="summry">
+                            ${c.article.content}
+                        </div>
+                    </li>
+                </c:forEach>
             </ul>
         </div>
     </div>
     <div class="main_right">
         <ul>
-            <li>
-                <span class="name">臧丽</span>
+            <c:forEach items="${commentList}" var="c">
+                <li>
+                    <span class="name">${c.user.nick}</span>
 
-                <p>虽然不总是必须，但是某些时候你可能需要将某些 DOM 内容放到一个盒子里。对于这种情况，可以试试面板组件。</p>
-            </li>
-            <li>
-                <span class="name">臧丽</span>
-
-                <p>虽然不总是必须，但是某些时候你可能需要将某些 DOM 内容放到一个盒子里。对于这种情况，可以试试面板组件。</p>
-            </li>
+                    <p>${c.content}</p>
+                </li>
+            </c:forEach>
         </ul>
     </div>
 </div>

@@ -40,6 +40,9 @@ public class NoteController extends BaseEntityController<Note, Long, NoteManager
     @ResponseBody
     public String doSave(@RequestParam Long id, @RequestParam String title, @RequestParam String content, HttpServletRequest request) {
         User user = (User) request.getSession().getAttribute("user");
+        if(null == user){
+            return "user/login";
+        }
         Note note = new Note();
         note.setUser(user);
         Article article = this.articleManager.findById(id);
@@ -53,6 +56,9 @@ public class NoteController extends BaseEntityController<Note, Long, NoteManager
     @RequestMapping(method = RequestMethod.GET, value = "/list")
     public String list(Model model, HttpServletRequest request) {
         User user = (User) request.getSession().getAttribute("user");
+        if(null == user){
+            return "user/login";
+        }
         model.addAttribute("noteList", this.noteManager.findByUser(user.getId()));
         return "note/list";
     }

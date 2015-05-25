@@ -4,12 +4,16 @@ import edu.zut.cs.qli.article.domain.Article;
 import edu.zut.cs.qli.article.service.ArticleManager;
 import edu.zut.cs.qli.base.controller.BaseEntityController;
 import edu.zut.cs.qli.catalog.service.CatalogManager;
-import edu.zut.cs.qli.utils.FileUtil;
-import edu.zut.cs.qli.utils.Uploader;
+import edu.zut.cs.qli.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,13 +49,16 @@ public class ArticleController extends
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/main")
-    public String main(Model model) {
-        model.addAttribute("articles", articleManager.findAll());
+    public String main() {
         return "article/main";
     }
     @RequestMapping(method = RequestMethod.GET, value = "/list")
-    public String list(Model model) {
-        model.addAttribute("articles", articleManager.findAll());
+    public String list(Model model,Integer pageIndex) {
+        if ( null == pageIndex){
+            pageIndex = 1;
+        }
+        Page<Article> page = articleManager.findAll(new MyPageable(pageIndex-1,2));
+        model.addAttribute("page", page);
         return "article/list";
     }
     @RequestMapping(method = RequestMethod.GET, value = "/show")
@@ -81,16 +88,27 @@ public class ArticleController extends
         article.setName(FileUtil.createUniqueName());
 
         articleManager.doSave(article, content);
-        return "保存成功！";
+        return Constants.MESSAGE_SUCCESS;
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/delete")
+    @RequestMapping(method = RequestMethod.POST, value = "/delete")
     @ResponseBody
     public String doDelete(@RequestParam long id) {
         // FIXME 删除今后需要改为设置删除标志，但这样的话也要将list函数排除删除标志，这个还需要考虑下
         articleManager.delete(id);
-        return "删除成功！";
+        return Constants.MESSAGE_SUCCESS;
     }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/deleteBatch")
+    @ResponseBody
+    public String deleteBatch(@RequestParam List<Long> ids) {
+        // FIXME 删除今后需要改为设置删除标志，但这样的话也要将list函数排除删除标志，这个还需要考虑下
+        for (Long id: ids) {
+            doDelete(id);
+        }
+        return Constants.MESSAGE_SUCCESS;
+    }
+
 
     // FIXME
     @RequestMapping(method = RequestMethod.POST, value = "/imageUp")
@@ -114,6 +132,23 @@ public class ArticleController extends
         }
     }
 
+    // FIXME 没有添加异常处理，其实只用返回前端说明上传状态就可以了
+    @RequestMapping(method = RequestMethod.POST, value = "/fileUp")
+    public String fileUp(@RequestParam MultipartFile file, Model model){
+        String fileName = file.getOriginalFilename();
+        if(!(fileName.endsWith(".ppt") || fileName.endsWith(".pptx"))){
+            model.addAttribute("message", Constants.MESSAGE_WARN);
+            return edit(0L, model);
+        }
+        try {
+            doSave(0L, fileName, FileParseUtil.getPPTContent(file.getInputStream()));
+        }catch (Exception e){
+            model.addAttribute("message", Constants.MESSAGE_ERROR);
+        }
+        model.addAttribute("message", Constants.MESSAGE_SUCCESS);
+        return list(model, 1);
+    }
+
     @RequestMapping(method = RequestMethod.GET, value = "/hot", produces = "application/json")
     @ResponseBody
     public List<Article> getHotList(){
@@ -123,6 +158,18 @@ public class ArticleController extends
     @RequestMapping(method = RequestMethod.GET, value = "/lasted", produces = "application/json")
     @ResponseBody
     public List<Article> getLastedList(){
-        return this.articleManager.findHot();
+        return this.articleManager.findLasted();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/file", produces = "application/json")
+    @ResponseBody
+    public List<Article> getFileList(){
+        return this.articleManager.findFileList();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/web", produces = "application/json")
+    @ResponseBody
+    public List<Article> getWebList(){
+        return this.articleManager.findWebList();
     }
 }
