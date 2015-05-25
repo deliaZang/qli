@@ -147,7 +147,7 @@ public class ArticleController extends
         }
         try {
             // FIXME 我不知道为什么要分类，而且应该是系统编程啊，这要弄的话文件上传也得分类，弄这干啥都
-//            doSave(0L, fileName, "NONE", FileParseUtil.getPPTContent(file.getInputStream()));
+            doSave(0L, fileName, "NONE", FileParseUtil.getPPTContent(file.getInputStream()), model);
         } catch (Exception e) {
             model.addAttribute("message", Constants.MESSAGE_ERROR);
         }
