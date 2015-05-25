@@ -16,4 +16,10 @@ public interface ArticleDao extends BaseDao<Article, Long> {
 
     @Query(value = "select a from Article a order by dateCreated desc")
     public List<Article> findLasted();
+
+    @Query(value = "select a from Article a where a.type = 'fileProgram' ")
+    public List<Article> findFileList();
+
+    @Query(value = "select a from Article a where a.type = 'webProgram'")
+    public List<Article> findWebList();
 }

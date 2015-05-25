@@ -40,6 +40,12 @@ public class ArticleServiceTest {
         articleManager.save(article);
     }
 
+
+    @Test
+    public void testDelete(){
+        articleManager.delete(1L);
+    }
+
     @Test
     public void testList(){
 

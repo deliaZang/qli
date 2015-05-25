@@ -48,6 +48,13 @@
             <div class="panel-heading">用户登录</div>
             <div class="panel-body">
                 <div class="control-group">
+                    <label class="control-label" for="role">角色</label>
+                    <select style="width: 174px;height: 26px; ">
+                        <option id="role" name="role" value="teacher">教师</option>
+                        <option name="role" value="teacher" selected="selected">学生</option>
+                    </select>
+                </div>
+                <div class="control-group">
                     <label class="control-label" for="userId">用户名</label>
                     <input type="text" id="userId" class="input" placeholder="用户名" name="name">
                 </div>

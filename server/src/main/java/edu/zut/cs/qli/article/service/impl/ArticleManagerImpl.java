@@ -63,4 +63,14 @@ public class ArticleManagerImpl extends BaseManagerImpl<Article, Long>
     public List<Article> findLasted() {
         return this.articleDao.findLasted();
     }
+
+    @Override
+    public List<Article> findFileList() {
+        return this.articleDao.findFileList();
+    }
+
+    @Override
+    public List<Article> findWebList() {
+        return this.articleDao.findWebList();
+    }
 }

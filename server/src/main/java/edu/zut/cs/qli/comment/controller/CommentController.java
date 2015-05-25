@@ -6,6 +6,7 @@ import edu.zut.cs.qli.base.controller.BaseEntityController;
 import edu.zut.cs.qli.comment.domain.Comment;
 import edu.zut.cs.qli.comment.service.CommentManager;
 import edu.zut.cs.qli.user.domain.User;
+import edu.zut.cs.qli.utils.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,10 +43,13 @@ public class CommentController extends
      * @param content
      * @return
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/save")
+    @RequestMapping(method = RequestMethod.GET, value = "/save")
     @ResponseBody
     public String save(@RequestParam Long id, @RequestParam String content,HttpServletRequest request){
         User user = (User) request.getSession().getAttribute("user");
+        if(null == user){
+            return "user/login";
+        }
         Comment comment = new Comment();
         Article article = this.articleManager.findById(id);
         comment.setUser(user);
@@ -58,6 +62,13 @@ public class CommentController extends
     @RequestMapping(method = RequestMethod.GET, value = "/list")
     public String list(Model model,HttpServletRequest request){
         User user = (User) request.getSession().getAttribute("user");
+        if(null == user){
+            return "user/login";
+        }
+        List<Comment> commentList = this.commentManager.findByUser(user.getId());
+        for(Comment c:commentList){
+            c.getArticle().setContent(FileUtil.getHtml(c.getArticle().getName()));
+        }
         model.addAttribute("commentList", this.commentManager.findByUser(user.getId()));
         return "comment/list";
     }

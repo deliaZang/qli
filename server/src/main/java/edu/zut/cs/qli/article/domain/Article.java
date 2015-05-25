@@ -3,6 +3,7 @@ package edu.zut.cs.qli.article.domain;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import edu.zut.cs.qli.base.domain.BaseEntityDomain;
 import edu.zut.cs.qli.catalog.domain.Catalog;
+import edu.zut.cs.qli.user.domain.User;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,6 +16,10 @@ import java.util.List;
 @Table(name = "Article")
 public class Article extends BaseEntityDomain {
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "u_id", nullable = false)
+    private User user;
+
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -23,6 +28,13 @@ public class Article extends BaseEntityDomain {
 
     @Column(name = "visits", nullable = false)
     private Integer visits = 0;
+
+    /**
+     * 文件编程：fileProgram;
+     * 网络编程：webProgram
+     */
+    @Column(name = "type", nullable = false)
+    private String type;
 
     @JsonManagedReference
     @OrderBy(value = "id ASC")
@@ -71,5 +83,13 @@ public class Article extends BaseEntityDomain {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

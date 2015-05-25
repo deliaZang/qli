@@ -10,14 +10,17 @@ import javax.persistence.Table;
 @Table(name="t_user")
 public class User extends BaseEntityDomain {
 
-    @Column(name="nick")
+    @Column(name="nick",nullable = false)
     private String nick;
 
-    @Column(name="name")
+    @Column(name="name",nullable = false)
     private String name;
 
-    @Column(name="password")
+    @Column(name="password",nullable = false)
     private String password;
+
+    @Column(name = "role",nullable = false)
+    private  String role;
 
     public String getName() {
         return name;
@@ -41,5 +44,13 @@ public class User extends BaseEntityDomain {
 
     public void setNick(String nick) {
         this.nick = nick;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

@@ -41,7 +41,7 @@
         function saveComment(id) {
             var comment = $("#comment").val();
             $.ajax({
-                type: "POST",
+                type: "GET",
                 url: "<%=path%>/comment/save.html",
                 data: {
                     id: id,
@@ -77,7 +77,7 @@
                     $("#myModal").modal('hide');
 */
                     $("#title").val("");
-                    $("#content").val("");
+                    $("#note").val("");
                 }
             });
         }
@@ -119,7 +119,7 @@
         <div class="panel-heading">
             <h3 class="panel-title">
                 课程内容
-                <a class="btn" href="#myModal" data-toggle="modal"  style="margin-left: 80%;" onclick="showModal()">
+                <a class="btn" href="#myModal" data-toggle="modal"  style="margin-left: 80%;">
                     <i class="glyphicon glyphicon glyphicon-pencil" title="记笔记" id="${article.id}"></i>
                 </a>
             </h3>
