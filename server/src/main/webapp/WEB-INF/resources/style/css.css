@@ -1,0 +1,13 @@
+body{margin: 0;padding: 0;font-family: "Microsoft Yahei","Helvetica Neue", Helvetica, Arial, sans-serif;}
+#header_title{width:1079px;margin:0px auto;}
+#listDiv1 .hot,#listDiv1 .new{ width: 470px;margin: 0 30px;border-radius: 0 0 1px 1px;float: left;
+    position: relative;box-shadow: 0 1px 2px #c5c5c5;padding: 0;}
+#header{margin-top: 20px;}
+.top_nav li a{height: 54px;padding: 0 30px;line-height: 52px;font-size: 16px;}
+
+.index_container{width:1079px;margin:0px auto;}
+#listDiv1 .hot .con_title,#listDiv1 .new .con_title{  padding: 0 0 0 20px;height: 30px;line-height: 30px;font-weight: bold;
+    font-size: 16px;color: #3B3B3B;}
+#hot li,#lasted li{line-height: 30px;font-size: 16px;}
+#foot{width: 80%;margin: 20px auto;padding: 0 15px;line-height: 25px;}
+.edit_container{width:1079px;margin:0px auto;}

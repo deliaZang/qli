@@ -52,8 +52,15 @@ public class ArticleController extends
         return "article/main";
     }
 
+    /**
+     * 获取课程列表（包括分页）
+     * @param model
+     * @param pageIndex
+     * @return
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/list")
     public String list(Model model, Integer pageIndex) {
+        //如果是第一次请求，则设置pageIndex
         if (null == pageIndex) {
             pageIndex = 1;
         }
@@ -61,7 +68,12 @@ public class ArticleController extends
         model.addAttribute("page", page);
         return "article/list";
     }
-
+    /**
+     * 查看课程详情
+     * @param id
+     * @param model
+     * @return
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/show")
     public String show(@RequestParam long id, Model model) {
         Article article = articleManager.findDetailById(id);
@@ -79,6 +91,15 @@ public class ArticleController extends
         return articleManager.findAll();
     }
 
+    /**
+     * 添加课程
+     * @param id
+     * @param title
+     * @param type
+     * @param content
+     * @param model
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/do")
     @ResponseBody
     public String doSave(@RequestParam(required = false, defaultValue = "0") Long id,
@@ -106,7 +127,7 @@ public class ArticleController extends
 
     @RequestMapping(method = RequestMethod.POST, value = "/deleteBatch")
     @ResponseBody
-    public String deleteBatch(@RequestParam List<Long> ids) {
+    public String deleteBatch(@RequestParam long[] ids) {
         // FIXME 删除今后需要改为设置删除标志，但这样的话也要将list函数排除删除标志，这个还需要考虑下
         for (Long id : ids) {
             doDelete(id);
@@ -114,7 +135,12 @@ public class ArticleController extends
         return Constants.MESSAGE_SUCCESS;
     }
 
-
+    /**
+     * 上传图片
+     * @param request
+     * @param response
+     * @throws Exception
+     */
     // FIXME
     @RequestMapping(method = RequestMethod.POST, value = "/imageUp")
     public void imageUp(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -137,6 +163,12 @@ public class ArticleController extends
         }
     }
 
+    /**
+     * 上传PPT
+     * @param file
+     * @param model
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/fileUp")
     public String fileUp(@RequestParam MultipartFile file, Model model) {
         String fileName = file.getOriginalFilename();

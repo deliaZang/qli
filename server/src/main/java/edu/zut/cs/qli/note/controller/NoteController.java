@@ -34,6 +34,14 @@ public class NoteController extends BaseEntityController<Note, Long, NoteManager
     ArticleManager articleManager;
 
 
+    /**
+     * 添加笔记
+     * @param id
+     * @param title
+     * @param content
+     * @param request
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/save")
     @ResponseBody
     public String doSave(@RequestParam Long id, @RequestParam String title, @RequestParam String content, HttpServletRequest request) {

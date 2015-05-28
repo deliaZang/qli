@@ -12,10 +12,10 @@ public class MyPageable extends PageRequest{
 	 */
 	private static final long serialVersionUID = -6665380431264357448L;
 
-	private static final int DEFAULT_PANGE_NUM = 0; //��̨��ҳ��0��ʼ��ǰ̨��1��ʼ
-	private static final int DEFAULT_SIZE = 10;
+	private static final int DEFAULT_PANGE_NUM = 0; //后台分页从0开始，前台从1开始
+	private static final int DEFAULT_SIZE = 20;
 	public MyPageable(){
-		super(DEFAULT_PANGE_NUM, DEFAULT_SIZE); //�ɻ�����ֱ��д0��20�����������
+		super(DEFAULT_PANGE_NUM, DEFAULT_SIZE); //忌讳这里直接写0和20，这叫神仙数
 	}
 
 	public MyPageable(int page, int size, Direction direction,
@@ -32,25 +32,25 @@ public class MyPageable extends PageRequest{
 	}
 
 	public void setNumPerPage(int size){
-		//�õ�AbstractPageRequest��class����
+		//得到AbstractPageRequest的class对象
 		Class<?> claz = this.getClass().getSuperclass().getSuperclass();
 		try {
 			Field sizeField = claz.getDeclaredField("size");
 			sizeField.setAccessible(true);
-			sizeField.set(this, size); //�޸��ĸ������size���ԣ����ݵ��ǵ�ǰ���󼴿�
+			sizeField.set(this, size); //修改哪个对象的size属性？传递的是当前对象即可
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			throw new RuntimeException("ͨ�������޸�AbstractPageRequest��size���Գ����쳣", e);
+			throw new RuntimeException("通过反射修改AbstractPageRequest的size属性出现异常", e);
 		}
 	}
 	public void setPageNum(int page){
-		//�õ�AbstractPageRequest��class����
+		//得到AbstractPageRequest的class对象
 		Class<?> claz = this.getClass().getSuperclass().getSuperclass();
 		try {
 			Field pageField = claz.getDeclaredField("page");
 			pageField.setAccessible(true);
-			pageField.set(this, page - 1); //�޸��ĸ������size���ԣ����ݵ��ǵ�ǰ���󼴿�
+			pageField.set(this, page - 1); //修改哪个对象的size属性？传递的是当前对象即可
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			throw new RuntimeException("ͨ�������޸�AbstractPageRequest��page���Գ����쳣", e);
+			throw new RuntimeException("通过反射修改AbstractPageRequest的page属性出现异常", e);
 		}
 	}
 

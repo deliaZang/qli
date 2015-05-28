@@ -57,6 +57,12 @@ public class CommentController extends
         return "SUCCESS";
     }
 
+    /**
+     * 根据教师查看评论
+     * @param model
+     * @param request
+     * @return
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/list")
     public String list(Model model,HttpServletRequest request){
         User user = (User) request.getSession().getAttribute("user");

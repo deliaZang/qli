@@ -1,16 +1,8 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%
-    String path = request.getContextPath();
-%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title></title>
-    <script type="text/javascript" src="<%=path%>/resources/js/jquery-1.11.2.min.js"></script>
-    <script type="text/javascript" src="<%=path%>/resources/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="<%=path%>/resources/js/bootstrap-modal.js"></script>
-    <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap.css" rel="stylesheet"/>
-    <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap-theme.css" rel="stylesheet"/>
+    <title>课程详情</title>
+    <%@include file="../common/header.jsp" %>
     <script type="text/javascript">
         $(function () {
             //获取评论列表
@@ -95,7 +87,8 @@
     </style>
 </head>
 <body>
-<div class="container-fluid">
+<%@include file="../common/top.jsp"%>
+<div class="container-fluid index_container">
     <div class="row-fluid">
         <!-- 目录-->
         <div class="panel panel-default">
@@ -145,7 +138,7 @@
     </div>
 </div>
 <!-- 记笔记的模态框 -->
-<div id="modal">
+<div id="modal" class="index_container">
     <div class="modal fade" id="myModal" tabindex="-1" data-backdrop="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -178,5 +171,6 @@
         </div>
     </div>
 </div>
+<%@include file="../common/foot.jsp"%>
 </body>
 </html>

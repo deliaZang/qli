@@ -53,4 +53,6 @@ public class User extends BaseEntityDomain {
     public void setRole(String role) {
         this.role = role;
     }
+
+    public static final User NULL = new User();
 }

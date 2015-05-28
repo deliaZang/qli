@@ -94,7 +94,7 @@
         }
     </style>
 </head>
-<body>
+<body style="overflow-y:hidden">
 <div class="main">
     <div class="main_left">
         <div class="hot_book">
@@ -106,7 +106,7 @@
                         <a href="javascrit:void(0);">${c.article.title}</a>
 
                         <div class="summry">
-                            ${c.article.content}
+                                ${c.article.content}
                         </div>
                     </li>
                 </c:forEach>

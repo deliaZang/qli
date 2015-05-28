@@ -11,6 +11,10 @@ import java.io.InputStream;
 /**
  * Created by shouhutsh on 15-5-24.
  */
+
+/**
+ * 处理PPT文件
+ */
 public class FileParseUtil {
 
     public static String getPPTContent(String s) throws Exception {

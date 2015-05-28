@@ -1,17 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-    String path = request.getContextPath();
-%>
 <html>
 <head>
 
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
     <title>编辑文章</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <script type="text/javascript" src="<%=path%>/resources/js/jquery-1.11.2.min.js"></script>
-    <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap.css" rel="stylesheet"/>
-    <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap-theme.css" rel="stylesheet"/>
+    <%@include file="../common/header.jsp" %>
     <link href="/resources/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
     <script type="text/javascript" src="/resources/js/umeditor/third-party/jquery.min.js"></script>
     <script type="text/javascript" charset="utf-8" src="/resources/js/umeditor/umeditor.config.js"></script>
@@ -19,11 +13,12 @@
     <script type="text/javascript" src="/resources/js/umeditor/lang/zh-cn/zh-cn.js"></script>
 </head>
 <body>
+<%@include file="../common/top.jsp"%>
 <div class="clearfix">
-    <div class="container-fluid">
+    <div class="container-fluid edit_container">
         <div class="row-fluid">
             <div class="span12">
-                <form class="form-inline" action="/article/fileUp.do" method="post" enctype="multipart/form-data">
+                <form class="form-inline" action="<%=path%>/article/fileUp.do" method="post" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="inputFile">上传PPT</label>
                         <input type="file" id="inputFile" name="file" class="form-control">
@@ -47,7 +42,7 @@
                         </div>
                         <h4>内容</h4>
                         <script type="text/plain" id="myEditor"
-                                style="width:80%;height:60%;">${article.content}</script>
+                                style="width:80%;height:400px;">${article.content}</script>
                         <br>
                         <button class="btn btn-primary" onclick="sendContent()">发表</button>
                     </div>
@@ -56,6 +51,7 @@
         </div>
     </div>
 </div>
+<%@include file="../common/foot.jsp"%>
 
 <script type="text/javascript">
     $(window).load(function () {

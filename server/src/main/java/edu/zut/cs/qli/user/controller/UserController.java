@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * Created by ZL on 2015/4/26.
  */
@@ -35,6 +33,11 @@ public class UserController extends BaseEntityController<User, Long, UserManager
     public String login() {
         return "user/login";
     }
+    @RequestMapping(method = RequestMethod.GET, value = "/index.html")
+    public String index(Model model) {
+        model.addAttribute("user", User.NULL);
+        return "user/index";
+    }
 
     @RequestMapping(method = RequestMethod.GET, value = "/register.html")
     public String register() {
@@ -48,7 +51,8 @@ public class UserController extends BaseEntityController<User, Long, UserManager
 
     @RequestMapping(method = RequestMethod.POST, value = "/login.html")
     public String loginCheck(@RequestParam String name,
-                             @RequestParam String password,Model model) {
+                             @RequestParam String password,
+                             Model model) {
         //用户名或者密码为空，返回登陆页
         if(StringUtils.isBlank(name)|| StringUtils.isBlank(password))
         {
@@ -73,13 +77,15 @@ public class UserController extends BaseEntityController<User, Long, UserManager
         this.userManager.save(user);
         return "user/login";
     }
+
+    /**
+     * 用户退出系统
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/exit")
-    public String exit(HttpServletRequest request){
-        User user = (User)request.getSession().getAttribute("user");
-        if(user!=null)
-        {
-            request.getSession().removeAttribute("user");
-        }
+    public String exit(Model model){
+        model.addAttribute("user", User.NULL);
         return "user/index";
     }
 
@@ -88,4 +94,5 @@ public class UserController extends BaseEntityController<User, Long, UserManager
         this.userManager.save(user);
         return Constants.MESSAGE_SUCCESS;
     }
+
 }

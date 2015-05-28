@@ -1,16 +1,8 @@
-<%@ page import="edu.zut.cs.qli.user.domain.User" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-    String path = request.getContextPath();
-    User user = (User) request.getSession().getAttribute("user");
-%>
+
 <html>
 <head>
-    <title></title>
-    <script type="text/javascript" src="<%=path%>/resources/js/jquery-1.11.2.min.js"></script>
-    <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap.css" rel="stylesheet"/>
-    <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap-theme.css" rel="stylesheet"/>
+    <%@include file="../common/header.jsp" %>
     <script>
         function show(index){
             $(".note_content").hide();
@@ -26,9 +18,10 @@
         }
 
         .note {
+            width:1079px;
             height: 100%;
             margin: 0px auto;
-            padding: 20px 10px 10px;
+            padding: 20px 30px 10px;
             position: relative;
         }
 
@@ -95,6 +88,7 @@
     </style>
 </head>
 <body>
+<%@include file="../common/top.jsp" %>
 <div class="note">
     <div class="note_title">
         <ul>
@@ -123,5 +117,6 @@
         </div>
     </c:forEach>
 </div>
+<%@include file="../common/foot.jsp" %>
 </body>
 </html>
