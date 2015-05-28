@@ -22,4 +22,6 @@ public interface ArticleDao extends BaseDao<Article, Long> {
 
     @Query(value = "select a from Article a where a.type = 'webProgram'")
     public List<Article> findWebList();
+
+    public void deleteBatch(String[] ids);
 }

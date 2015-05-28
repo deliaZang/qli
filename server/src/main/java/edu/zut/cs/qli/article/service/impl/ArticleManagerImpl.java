@@ -73,4 +73,9 @@ public class ArticleManagerImpl extends BaseManagerImpl<Article, Long>
     public List<Article> findWebList() {
         return this.articleDao.findWebList();
     }
+
+    @Override
+    public void deleteBatch(String[] ids) {
+        this.articleDao.deleteBatch(ids);
+    }
 }

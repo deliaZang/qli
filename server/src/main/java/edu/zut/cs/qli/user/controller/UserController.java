@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Created by ZL on 2015/4/26.
@@ -80,7 +81,6 @@ public class UserController extends BaseEntityController<User, Long, UserManager
 
     /**
      * 用户退出系统
-     * @param request
      * @return
      */
     @RequestMapping(value = "/exit")
@@ -93,6 +93,15 @@ public class UserController extends BaseEntityController<User, Long, UserManager
     public String update(User user) {
         this.userManager.save(user);
         return Constants.MESSAGE_SUCCESS;
+    }
+    @RequestMapping(method = RequestMethod.GET, value = "/file.html")
+    public String file() {
+        return "user/filet";
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/upload")
+    public String fileUp(@RequestParam MultipartFile file, Model model) {
+        return "";
     }
 
 }

@@ -48,4 +48,10 @@ public interface ArticleManager extends BaseManager<Article, Long> {
      * @return
      */
     public List<Article> findWebList();
+
+    /**
+     * 批量删除
+     * @param ids
+     */
+    public void deleteBatch(String[] ids);
 }

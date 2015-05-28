@@ -127,10 +127,10 @@ public class ArticleController extends
 
     @RequestMapping(method = RequestMethod.POST, value = "/deleteBatch")
     @ResponseBody
-    public String deleteBatch(@RequestParam long[] ids) {
+    public String deleteBatch(@RequestParam(value = "ids[]") String[] ids) {
         // FIXME 删除今后需要改为设置删除标志，但这样的话也要将list函数排除删除标志，这个还需要考虑下
-        for (Long id : ids) {
-            doDelete(id);
+       for (String id : ids) {
+           this.articleManager.delete(Long.parseLong(id));
         }
         return Constants.MESSAGE_SUCCESS;
     }

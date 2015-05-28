@@ -46,12 +46,13 @@
                 if (window.confirm("确认要全部删除吗?")) {
                     var ids = new Array();
                     for(var i = 0 ; i<checkedNum ; i++){
-                        ids[i] = checkObjects[i].value;
+                        ids.push(checkObjects[i].value);
                     }
 
                     $.ajax({
                         type: "post",
                         url: "<%=path%>/article/deleteBatch.html",
+                        dataType:"json",
                         data: {ids: ids},
                         success: function (json) {
                             if (json == 'SUCCESS') {
@@ -63,13 +64,12 @@
                             alert("删除失败");
                         }
                     });
-                    return true;
                 }
             }
             else {
                 alert("未选中任何项,请至少选择一项");
+                return false;
             }
-            return false;
 
         }
     </script>
