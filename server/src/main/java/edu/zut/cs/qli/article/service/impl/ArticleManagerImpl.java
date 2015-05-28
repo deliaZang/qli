@@ -76,6 +76,5 @@ public class ArticleManagerImpl extends BaseManagerImpl<Article, Long>
 
     @Override
     public void deleteBatch(String[] ids) {
-        this.articleDao.deleteBatch(ids);
     }
 }
