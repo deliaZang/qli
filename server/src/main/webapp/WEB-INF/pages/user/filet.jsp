@@ -11,9 +11,12 @@
 </head>
 <body>
 ${fileUrl}
-<form action="<%=path%>/user/upload.html" method="post" enctype="multipart/form-data">
-  选择文件:<input type="file" name="file">
-  <input type="submit" value="提交">
+<form action="<%=path%>/article/fileUp.do" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        上传PPT
+        <input type="file"  name="file" class="form-control">
+        <input type="submit" name="上传" class="btn btn-default"/>
+    </div>
 </form>
 </body>
 </html>

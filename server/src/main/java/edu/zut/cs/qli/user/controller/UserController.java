@@ -100,7 +100,7 @@ public class UserController extends BaseEntityController<User, Long, UserManager
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/upload")
-    public String fileUp(@RequestParam MultipartFile file, Model model) {
+    public String fileUp(@RequestParam(value = "file") MultipartFile file, Model model) {
         return "";
     }
 
