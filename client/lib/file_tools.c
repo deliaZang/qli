@@ -119,36 +119,27 @@ sunday(FILE *file, const char *pat){
     if(NULL == file || NULL == pat){
         return -1;
     }
-    long f_len, p_len;
-    const long pos = ftell(file);
-    f_len = file_bytes(file);
-    p_len = strlen(pat);
+    const long old = ftell(file);
+    int str_len = strlen(pat), next_index = 0;
+    char *read_str = Calloc(str_len, sizeof(char));
 
-    int idx;
-    long f = pos, p = 0;
-
-    int c;
-    while(!feof(file) && p < p_len){
-        while((c = fgetc(file)) == pat[p]){
-            ++f, ++p;
-            if(p >= p_len){
-                fseek(file, pos, SEEK_SET);
-                return f-p;
-            }else if(f >= f_len){
-                fseek(file, pos, SEEK_SET);
-                return -1;
+    int i, temp;
+    while(!feof(file)){
+        read_str[next_index] = fgetc(file);
+        temp = next_index;
+        for(i = 0; i <= str_len; ++i, ++temp){
+            if(str_len == i){
+                int res = ftell(file) - str_len;
+                fseek(file, old, SEEK_SET);
+                return res;
+            }
+            if(pat[i] != read_str[(temp + 1) % str_len]){
+                break;
             }
         }
-
-        if((idx = index_of(pat, file_pos_char(file, f-p+p_len))) < 0){
-            f = ftell(file)-p+p_len+1;
-        }else{
-            f = ftell(file)-p+p_len-idx-1;
-        }
-        fseek(file, f, SEEK_SET);
-        p = 0;
+        next_index = (next_index + 1) % str_len;
     }
-    fseek(file, pos, SEEK_SET);
+    fseek(file, old, SEEK_SET);
     return -1;
 }
 

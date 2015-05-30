@@ -149,6 +149,7 @@ jurge_entity(FILE *file){
             longjmp(jmp_init_tab, 1);
         }
         switch(c){
+            case '/':
             case '>':
                 ungetc(c, file);
             case ' ':

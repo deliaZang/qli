@@ -16,12 +16,17 @@ web_browser(const char *path)
     }
 
     FILE *temp, *file = fdopen(sockfd, "r");
+#ifdef _MY_DEBUG
+    while(EOF != read_line(file, buffer, MAXLINE)){
+        fputs(buffer, stdout);
+    }
+#else
     while(EOF != read_line(file, buffer, MAXLINE)){
         if(0 == strcmp("\r", buffer)){
             break;
         }
     }
-    temp = tmpfile();
+    temp = fopen("abc.tmp", "w+");
     while(n = read(sockfd, buffer, MAXLINE)){
         if(n < 0){
             goto error;
@@ -36,6 +41,7 @@ web_browser(const char *path)
     display_tab(tab);
     distroy_tab(tab);
     fclose(temp);
+#endif
     return 0;
 
 error:
