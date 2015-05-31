@@ -53,33 +53,6 @@ display_tab(struct tab *tab){
 
 #else
 
-// FIXME 需要将tab做成链表
-static void
-do_new_tab(struct html *link){
-    int sockfd, n;
-    char buffer[MAXLINE];
-    sockfd = tcp_connect("localhost", "8080");
-
-    sprintf(buffer, "GET %s HTTP/1.0\n\n", (char *)link->data);
-    Write(sockfd, buffer, strlen(buffer));
-    FILE *temp, *file = fdopen(sockfd, "r");
-    while(EOF != read_line(file, buffer, MAXLINE)){
-        if(0 == strcmp("\r", buffer)){
-            break;
-        }
-    }
-    temp = tmpfile();
-    while(0 != (n = Read(sockfd, buffer, MAXLINE))){
-        Write(fileno(temp), buffer, n);
-    }
-    close(sockfd);
-
-    struct tab *tab = init_tab(temp);
-    display_tab(tab);
-    distroy_tab(tab);
-    Fclose(temp);
-}
-
 static void
 deal_key_press(struct tab *tab){
     int ch;
@@ -126,8 +99,7 @@ deal_key_press(struct tab *tab){
                 do{
                     link = DLlist_getdata(links(tab));
                     if(y == link->row){
-                        //mvwprintw(win_tab(tab), start_line+2, 0, "%s", (char *)link->item->data);
-                        web_browser(link->item->data);
+                        web_browser(tab->url, link->item->data);
                         break;
                     }
                     links(tab) = links(tab)->next;

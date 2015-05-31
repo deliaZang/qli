@@ -202,8 +202,16 @@ struct link{
     struct html *item;
 };
 
+struct URL{
+    char *url;
+    char *host;
+    char *post;
+    char *path;
+};
+
 struct tab{
     FILE *file;
+    struct URL *url;
     struct display disp_info;
     struct DLlist *root;
     struct DLlist *links;
@@ -224,6 +232,8 @@ void
 distroy_tab(struct tab *tab);
 void
 display_tab(struct tab *tab);
+struct URL *
+Parse_url(const struct URL *parent, const char *url);
 /**
    html end
  */

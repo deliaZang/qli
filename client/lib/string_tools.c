@@ -65,3 +65,44 @@ Calloc(size_t nmemb, size_t size){
     return ptr;
 }
 
+int
+start_with(const char *src, const char *start){
+    if(NULL == src || NULL == start) return -1;
+    int i, len = strlen(start);
+    for(i = 0; i < len; ++i){
+        if(src[i] != start[i]){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int
+index_of_char(const char *str, int ch){
+    int i, len = strlen(str);
+    for(i = 0; i < len; ++i){
+        if(ch == str[i]){
+            return i;
+        }
+    }
+    return -1;
+}
+
+int
+last_of_char(const char *str, int ch){
+    int i, len = strlen(str);
+    for(i = len-1; i >= 0; --i){
+        if(ch == str[i]){
+            return i;
+        }
+    }
+    return -1;
+}
+
+char *
+copy_to(const char *src, int index){
+    if(NULL == src || 0 >= index) return NULL;
+    char *s = Calloc(index+1, sizeof(char));
+    snprintf(s, index+1, "%s", src);
+    return s;
+}
