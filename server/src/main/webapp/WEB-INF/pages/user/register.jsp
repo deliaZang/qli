@@ -22,24 +22,38 @@
 
     <script type="text/javascript">
         $(function () {
+            $("#saveBtn").click(function(){
+                $('#register').submit();
+            });
             $("#register").validate({
                 rules: {
-                    name: {required: true, minlength: 6},
+                    name: {
+                        required: true, minlength: 3,
+                        remote: {
+                            url: "<%=path%>/user/isExit.html",
+                            type: "post",
+                            dataType: "json"
+
+                        }
+                    },
                     nick: {required: true, minlength: 6},
                     birthday: {required: true},
                     password: {required: true, minlength: 6},
-                    confirmPassword: {required: true, minlength: 6}
+                    confirmPassword: {required: true, minlength: 6,equalTo:'#password'}
+
                 },
+                messages:{
+                    name:{
+                        remote: '用户名已存在',
+                        required:'用户名必须填写'
+                    },
+                    confirmPassword:'两次输入不一致'
+                },
+
                 errorPlacement: function (error, element) {
                     error.appendTo(element.siblings("span"));
 
                 }});
-            $("#confirmPassword").blur(function () {
-                if ($("#confirmPassword").val() != $("#password").val()) {
-                    alert("两次密码输入不一致，请确认后再次输入");
-                    $("#confirmPassword").focus();
-                }
-            });
         });
     </script>
     <style type="text/css">
@@ -60,7 +74,7 @@
             padding: 10px;
         }
         .right{
-            width: 130px;
+            width: 200px;
             height: 50px;
         }
     </style>
@@ -77,27 +91,27 @@
                         <td class="left"><label class="control-label" for="name">姓名</label>
                         </td>
                         <td class="right"><input type="text" class="input" id="name" name="name" placeholder="用户名">
-                            <font color="red">*</font><br>
+                            <font color="red">*</font>
                             <span></span></td>
                     </tr>
                     <tr>
                         <td class="left"><label class="control-label" for="nick" id="nickLabel">昵称</label>
                         </td>
-                        <td class="right"><input type="text" class="input" id="nick" name="nick">
+                        <td class="right"><input type="text" class="input" id="nick" name="nick" placeholder="昵称">
                         </td>
                     </tr>
                     <tr>
                         <td class="left"><label class="control-label" for="password" id="passwordLabel">密码</label>
                         </td>
                         <td class="right"><input type="password" class="input" placeholder="密码" id="password" name="password">
-                            <font color="red">*</font><br>
+                            <font color="red">*</font>
                             <span></span></td>
                     </tr>
                     <tr>
                         <td class="left"><label class="control-label" for="confirmPassword" id="confirmPasswordLabel">确认密码</label>
                         </td>
                         <td class="right"><input type="password" class="input" placeholder="确认密码" id="confirmPassword">
-                            <font color="red">*</font><br>
+                            <font color="red">*</font>
                             <span></span></td>
                     </tr>
                 </table>
@@ -105,13 +119,12 @@
             <div class="panel-footer">
                 <div class="form-actions">
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">提交</button>
+                        <button type="button" class="btn btn-primary" id="saveBtn">提交</button>
                         <button class="btn" type="reset">重置</button>
                     </div>
                 </div>
             </div>
         </div>
-
     </form>
 </div>
 </body>
