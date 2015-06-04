@@ -13,6 +13,8 @@
   <script type="text/javascript" src="<%=path%>/resources/js/bootstrap.min.js"></script>
   <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap.css" rel="stylesheet"/>
   <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap-theme.css" rel="stylesheet"/>
+  <script type="text/javascript" src="<%=path%>/resources/js/jquery.validate.js"></script>
+  <script type="text/javascript" src="<%=path%>/resources/js/messages_zh.js"></script>
   <script type="application/javascript">
     $(function () {
       /** 信息验证**/
@@ -113,7 +115,7 @@
       <div class="panel-body">
         <div class="tab-content">
           <div class="tab-pane  active" id="panel-924305">
-            <form class="form-horizontal" role="form" id="updateUserInfo">
+            <form class="form-horizontal" role="form" id="updateUserInfo" action="<%=path%>/user/update.html">
               <div class="control-group">
                 <label class="control-label" for="name">姓名</label>
 
@@ -135,8 +137,7 @@
           </div>
 
           <div class="tab-pane" id="panel-143310">
-            <div class="col-sm-4">
-              <form class="form-horizontal" role="form" id="updatePassword" method="post">
+              <form class="form-horizontal" role="form" id="updatePassword" method="post" action="<%=path%>/user/update.html">
                 <div class="control-group">
                   <label class="control-label" for="password">原密码</label>
 
@@ -171,7 +172,6 @@
                   <button type="submit" class="btn btn-primary" id="updatePwdBtn">提交</button>
                 </div>
               </form>
-            </div>
           </div>
         </div>
       </div>
