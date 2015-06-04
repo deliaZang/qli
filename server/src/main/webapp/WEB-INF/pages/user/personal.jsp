@@ -1,20 +1,8 @@
-<%@ page import="edu.zut.cs.qli.user.domain.User" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%
-  String path = request.getContextPath();
-  User user = (User) request.getSession().getAttribute("user");
-%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-  <title></title>
-  <script type="text/javascript" src="<%=path%>/resources/js/jquery-1.11.2.min.js"></script>
-  <script type="text/javascript" src="<%=path%>/resources/js/bootstrap.min.js"></script>
-  <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap.css" rel="stylesheet"/>
-  <link href="<%=path%>/resources/style/bootstrap-3.3.4-dist/css/bootstrap-theme.css" rel="stylesheet"/>
-  <script type="text/javascript" src="<%=path%>/resources/js/jquery.validate.js"></script>
-  <script type="text/javascript" src="<%=path%>/resources/js/messages_zh.js"></script>
+  <title>个人中心</title>
+  <%@include file="../common/header.jsp" %>
   <script type="application/javascript">
     $(function () {
       /** 信息验证**/
@@ -72,40 +60,21 @@
       });
     });
   </script>
-  <style type="text/css">
-    ul li{
-      width: 200px;
-    }
-    .container {
-      height: 600px;
-      margin-right: 50%;
-      margin-right: 50%;
-    }
-    .panel
-    {
-      width: 500px;
-      border: none;
-    }
-    .panel-heading
-    {
-      width: 500px;
-    }
-    .panel-body
-    {
-      width: 500px;
-      padding: 0px;
-    }
-    .tab-content {
-      width: 500px;
-    }
+  <style>
+    .control-label{  line-height: 35px;}
+    .controls .input{  line-height: 28px;margin: 5px 0;}
+    #updatePwdBtn,#updateBtn{  width: 162px;margin-top: 20px; border: none;}
   </style>
+
 </head>
 <body>
+<%@include file="../common/top.jsp" %>
+
 <input id="passwordInput" value="${user.password}" hidden="hidden">
 
-<div class="container" align="center">
+<div class="container personal_container" style="width: 1050px">
   <div class="panel panel-primary">
-    <div class="tabbable  col-md-4 column" id="tabs-159901">
+    <div class="tabbable  col-md-6 column" id="tabs-159901" style="margin: 0 auto;float: none;">
       <div class="panel-heading">
         <ul class="nav nav-tabs">
           <li class="active"><a href="#panel-924305" data-toggle="tab">个人信息</a></li>
@@ -137,45 +106,48 @@
           </div>
 
           <div class="tab-pane" id="panel-143310">
-              <form class="form-horizontal" role="form" id="updatePassword" method="post" action="<%=path%>/user/update.html">
-                <div class="control-group">
-                  <label class="control-label" for="password">原密码</label>
+            <form class="form-horizontal" role="form" id="updatePassword" method="post" action="<%=path%>/user/update.html">
+              <div class="control-group">
+                <label class="control-label" for="password">原密码</label>
 
-                  <div class="controls">
-                    <input type="password" class="input" placeholder="密码" id="password"
-                           name="password">
-                    <font color="red">*</font>
-                    <span></span>
-                  </div>
+                <div class="controls">
+                  <input type="password" class="input" placeholder="密码" id="password"
+                         name="password">
+                  <font color="red">*</font>
+                  <span></span>
                 </div>
-                <div class="control-group">
-                  <label class="control-label" for="newPassword">新密码</label>
+              </div>
+              <div class="control-group">
+                <label class="control-label" for="newPassword">新密码</label>
 
-                  <div class="controls">
-                    <input type="password" class="input" placeholder="新密码" id="newPassword"
-                           name="newPassword">
-                    <font color="red">*</font>
-                    <span></span>
-                  </div>
+                <div class="controls">
+                  <input type="password" class="input" placeholder="新密码" id="newPassword"
+                         name="newPassword">
+                  <font color="red">*</font>
+                  <span></span>
                 </div>
-                <div class="control-group">
-                  <label class="control-label" for="confirmNewPassword">确认新密码</label>
+              </div>
+              <div class="control-group">
+                <label class="control-label" for="confirmNewPassword">确认新密码</label>
 
-                  <div class="controls">
-                    <input type="password" class="input" placeholder="确认新密码" id="confirmNewPassword"
-                           name="confirmNewPassword">
-                    <font color="red">*</font>
-                    <span></span>
-                  </div>
+                <div class="controls">
+                  <input type="password" class="input" placeholder="确认新密码" id="confirmNewPassword"
+                         name="confirmNewPassword">
+                  <font color="red">*</font>
+                  <span></span>
                 </div>
-                <div class="form-actions">
-                  <button type="submit" class="btn btn-primary" id="updatePwdBtn">提交</button>
-                </div>
-              </form>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="updatePwdBtn">提交</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<%@include file="../common/foot.jsp" %>
+
 </body>
