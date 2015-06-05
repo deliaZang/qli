@@ -3,6 +3,8 @@ package edu.zut.cs.qli.article.domain;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import edu.zut.cs.qli.base.domain.BaseEntityDomain;
 import edu.zut.cs.qli.catalog.domain.Catalog;
+import edu.zut.cs.qli.comment.domain.Comment;
+import edu.zut.cs.qli.note.domain.Note;
 import edu.zut.cs.qli.user.domain.User;
 
 import javax.persistence.*;
@@ -40,6 +42,17 @@ public class Article extends BaseEntityDomain {
     @OrderBy(value = "id ASC")
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private List<Catalog> catalogs = new ArrayList<>();
+
+    @JsonManagedReference
+    @OrderBy(value = "id ASC")
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
+
+    @JsonManagedReference
+    @OrderBy(value = "id ASC")
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    private List<Note> notes = new ArrayList<>();
+
 
     public Integer getVisits() {
         return visits;

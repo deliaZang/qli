@@ -40,7 +40,8 @@ public class UserController extends BaseEntityController<User, Long, UserManager
 
     @RequestMapping(method = RequestMethod.GET, value = "/index.html")
     public String index(Model model) {
-        model.addAttribute("user", User.NULL);
+        if(model.asMap().get("user") == null)
+            model.addAttribute("user", User.NULL);
         return "user/index";
     }
 

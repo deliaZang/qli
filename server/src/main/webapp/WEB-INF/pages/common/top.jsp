@@ -1,4 +1,3 @@
-<%@ page import="edu.zut.cs.qli.user.domain.User" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <div class="container-fluid" id="header_title">
@@ -13,10 +12,10 @@
                 <a><span style="font-size: 24px">Linux课程设计</span></a></li>
               <li><a href="<%=path%>/user/index.html" target="_self">首页</a></li>
               <li><a href="<%=path%>/article/list.html" target="_self">目录</a></li>
-              <c:if test="${user.role == 'teacher'}">
+              <c:if test="${user.role eq 'teacher'}">
                 <li><a href="<%=path%>/comment/list.html" target="_self">评论</a></li>
               </c:if>
-              <c:if test="${user.role == 'student'}">
+              <c:if test="${user.role eq 'student'}">
                 <li><a href="<%=path%>/note/list.html" target="_self">笔记</a></li>
               </c:if>
               <c:if test="${User.NULL eq user}">
