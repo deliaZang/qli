@@ -13,10 +13,5 @@ public final class Constants {
 
     public static final String TEACHER= "teacher";
 
-    public static final String MESSAGE_SUCCESS = "SUCCESS";
-
-    public static final String MESSAGE_ERROR = "ERROR";
-
-    public static final String MESSAGE_WARN = "WARN";
-
+    public static final String MESSAGE_SUCCESS = "common/success";
 }

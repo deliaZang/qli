@@ -9,13 +9,12 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Created by ZL on 2015/4/26.
@@ -44,6 +43,32 @@ public class UserController extends BaseEntityController<User, Long, UserManager
             model.addAttribute("user", User.NULL);
         return "user/index";
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "datagrid")
+    public String datagrid(Model model) {
+        if(((User) model.asMap().get("user")).getRole().equals("teacher"))
+            return "user/datagrid";
+        return null;
+    }
+
+    @RequestMapping(value = "list.json")
+    @ResponseBody
+    public List list(){
+        return userManager.findAll();
+    }
+
+    @RequestMapping(value = "get.json")
+    @ResponseBody
+    public User get(@RequestParam Long id){
+        return userManager.findById(id);
+    }
+
+    @RequestMapping(value = "delete.html")
+    @ResponseBody
+    public void delete(@RequestParam Long id){
+        userManager.delete(id);
+    }
+
 
     @RequestMapping(method = RequestMethod.GET, value = "/register.html")
     public String register() {
