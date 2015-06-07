@@ -105,7 +105,7 @@
             <div class="note_content first" id="note_content${status.index+1}">
                 <div class="theme">${note.title}</div>
                 <div class="content">
-                    ${note.content}
+                        ${note.content}
                 </div>
             </div>
         </c:if>
@@ -117,6 +117,7 @@
         </div>
     </c:forEach>
 </div>
+
 <%@include file="../common/foot.jsp" %>
 </body>
 </html>

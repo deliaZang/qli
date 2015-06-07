@@ -1,0 +1,29 @@
+﻿[
+	{id: "user", text: "用户管理"},
+		
+	{id: "userDatagrid", text: "用户管理", pid: "user" },
+
+	{id: "article", text: "课程管理"},
+
+	{id: "articleDataGrid", text: "课程管理", pid: "article" },
+	{id: "articleWindow", text: "添加课程", pid: "article" },
+
+
+	{ id: "right", text: "权限管理"},
+		
+	{id: "base", text: "Base",  pid: "right" },
+				
+	{id: "ajax", text: "Ajax", pid: "base"},
+	{id: "json", text: "JSON", pid: "base"},
+	{id: "date", text: "Date", pid: "base"},
+		
+	{id: "forms", text: "Forms", pid: "right"},
+				
+	{id: "button", text: "Button", pid: "forms"},
+	{id: "listbox", text: "ListBox", pid: "forms"},
+	{id: "checkboxlist", text: "CheckBoxList", pid: "forms"},
+	{id: "radiolist", text: "RadioList", pid: "forms"},
+	{id: "calendar", text: "Calendar", pid: "forms"}				
+]
+
+

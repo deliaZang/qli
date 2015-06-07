@@ -54,4 +54,6 @@ public interface ArticleManager extends BaseManager<Article, Long> {
      * @param ids
      */
     public void deleteBatch(String[] ids);
+
+    public List<Article> findByUser(long id);
 }

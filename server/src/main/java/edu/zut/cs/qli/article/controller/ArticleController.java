@@ -173,15 +173,15 @@ public class ArticleController extends
     public String fileUp(@RequestParam MultipartFile file, Model model) {
         String fileName = file.getOriginalFilename();
         if (!(fileName.endsWith(".ppt") || fileName.endsWith(".pptx"))) {
-            model.addAttribute("message", "异常！");
+            model.addAttribute("message", Constants.MESSAGE_WARN);
             return edit(0L, model);
         }
         try {
             // FIXME 我不知道为什么要分类，而且应该是系统编程啊，这要弄的话文件上传也得分类，弄这干啥都
             doSave(0L, fileName, "NONE", FileParseUtil.getPPTContent(file.getInputStream()), model);
-            model.addAttribute("message", "成功！");
+            model.addAttribute("message", Constants.MESSAGE_SUCCESS);
         } catch (Exception e) {
-            model.addAttribute("message", "失败！");
+            model.addAttribute("message", Constants.MESSAGE_ERROR);
         }
         return list(model, 1);
     }

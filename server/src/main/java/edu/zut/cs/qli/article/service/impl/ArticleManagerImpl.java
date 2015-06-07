@@ -77,4 +77,9 @@ public class ArticleManagerImpl extends BaseManagerImpl<Article, Long>
     @Override
     public void deleteBatch(String[] ids) {
     }
+
+    @Override
+    public List<Article> findByUser(long id) {
+        return this.articleDao.findByUser(id);
+    }
 }

@@ -150,6 +150,7 @@ public class UserController extends BaseEntityController<User, Long, UserManager
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/update")
+    @ResponseBody
     public String update(User user) {
         this.userManager.save(user);
         return Constants.MESSAGE_SUCCESS;

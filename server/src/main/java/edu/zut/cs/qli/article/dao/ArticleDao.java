@@ -3,6 +3,7 @@ package edu.zut.cs.qli.article.dao;
 import edu.zut.cs.qli.article.domain.Article;
 import edu.zut.cs.qli.base.dao.BaseDao;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -22,5 +23,8 @@ public interface ArticleDao extends BaseDao<Article, Long> {
 
     @Query(value = "select a from Article a where a.type = 'webProgram'")
     public List<Article> findWebList();
+
+    @Query(value = "select a from Article a where a.user.id =:id")
+    public List<Article> findByUser(@Param("id") long id);
 
 }

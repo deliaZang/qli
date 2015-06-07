@@ -65,6 +65,7 @@ public class NoteController extends BaseEntityController<Note, Long, NoteManager
         if(null == user){
             return "user/login";
         }
+        model.addAttribute("articleList",articleManager.findByUser(user.getId()));
         model.addAttribute("noteList", this.noteManager.findByUser(user.getId()));
         return "note/list";
     }
